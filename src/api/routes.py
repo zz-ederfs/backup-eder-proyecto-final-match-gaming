@@ -24,7 +24,7 @@ def get_random_games(number_games):
         if number_games > rows_count:
             return jsonify({"msg":"Your number of games requested is above the total number of games in our BD"}),400
         else:
-            query_games = db.session.query(Game).order_by(func.random()).limit(4).all()
+            query_games = db.session.query(Game).order_by(func.random()).limit(number_games).all()
             serialize_games = [result.serialize() for result in query_games]        
             return jsonify(serialize_games),200       
 

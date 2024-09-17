@@ -1,5 +1,6 @@
 import React from "react";
 import logo from "../../img/logo/logo-marca.png"
+import { Link } from "react-router-dom";
 
 export const AgeVerification = () => {
     return(
@@ -17,8 +18,12 @@ export const AgeVerification = () => {
         </div>
         <footer className="text-center py-3 my-4">
         <div className="d-flex justify-content-center gap-2 flex-wrap">
-            <button className="btn btn-prev"><i className="fa-solid fa-arrow-left me-2"></i>Back</button>
-            <button className="btn btn-next">Continue</button>
+            <Link to="/login">
+                <button className="btn btn-prev"><i className="fa-solid fa-arrow-left me-2"></i>Back</button>
+            </Link>
+            <Link to="/genre-selection">
+                <button className="btn btn-next">Continue</button>
+            </Link>
         </div>
     </footer>
         </div>
