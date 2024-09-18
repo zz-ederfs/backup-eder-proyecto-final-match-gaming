@@ -45,10 +45,6 @@ export const RegistrationForm = () => {
                 type_game: genre_selection,
             };
 
-            console.log(game_selection)
-            console.log(platform_selection)
-            console.log(genre_selection)
-            console.log("Formulario enviado", data);
             actions.registerUser(data).then(() => {
 
                 navigate('/login');
@@ -56,7 +52,6 @@ export const RegistrationForm = () => {
                 console.error('Error en el registro:', err);
                 setError("Hubo un problema al registrar el usuario.");
             });
-            console.log(anyGenreSelected)
         }
     }
 

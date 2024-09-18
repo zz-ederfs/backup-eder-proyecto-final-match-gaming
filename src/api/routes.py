@@ -216,9 +216,30 @@ def get_profile_user(user_id):
 
 
 
+@api.route('/filter_game', methods=['POST'])
+def search_game():
+    try:
+        data = request.get_json()
 
+        game_name = data.get("name")
+        platform = data.get("platform")
+        type_game = data.get("type_game")
 
+        query = db.session.query(Game)
 
+        if game_name:
+            query = query.filter(Game.name.ilike(f'%{game_name}%'))
 
-    
+        if platform:
+            query = query.filter(Game.platform.contains([platform])) 
 
+        if type_game:
+            query = query.filter(Game.type_game.contains([type_game]))  
+
+        games = query.all()
+        serialize_game = [game.serialize() for game in games]
+
+        return jsonify(serialize_game), 200
+
+    except Exception as err:
+        return jsonify({"error": "There was an unexpected error", "msg": str(err)}), 500
