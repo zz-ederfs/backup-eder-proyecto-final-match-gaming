@@ -13,6 +13,7 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();  // Prevenimos la recarga de la página
+    console.log("Handler funcionando");
     const success = await actions.loginUser(username, password);  // Llamamos a la acción de login
 
     if (success) {

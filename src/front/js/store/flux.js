@@ -22,8 +22,9 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 			loginUser: async (username, password) => {
 				try {
+					console.log("Action logi funcionando recibe: ",username,password);
 				  console.log("Backend URL:", process.env.BACKEND_URL);
-				  const response = await fetch(`${process.env.BACKEND_URL}/login`, {
+				  const response = await fetch(`${process.env.BACKEND_URL}/api/login`, {
 					method: "POST",
 					headers: {
 					  "Content-Type": "application/json",
