@@ -72,7 +72,7 @@ class User(db.Model):
     steam_id = db.Column(db.String(80),unique=False,nullable=True)
     schedule = db.Column(Enum(Schedule),nullable=True)
     description = db.Column(db.String(200), unique=False, nullable=True)
-    region = db.Column(Enum(Region),unique=False,nullable=False)
+    region = db.Column(Enum(Region),unique=False,nullable=True)
     gender = db.Column(Enum(Gender),unique=False,nullable=False)
     platform = db.Column(ARRAY(Enum(Platform)),unique=False,nullable=False)
     type_game = db.Column(ARRAY(Enum(TypeGame)),unique=False,nullable=False)
