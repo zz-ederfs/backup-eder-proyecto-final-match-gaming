@@ -1,0 +1,95 @@
+.gradient-background-profile {
+  background: linear-gradient(
+    360deg,
+    rgba(0, 1, 36, 1) 2%,
+    rgba(140, 103, 246, 1) 100%
+  );
+}
+
+.background-user-information {
+  background-color: #161616;
+}
+
+.background-user-platforms {
+  background-color: #1e1e1e;
+}
+
+.custom-div-platforms {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  border-radius: 10px;
+  margin-bottom: 5px;
+}
+
+.custom-div-sessions {
+  border-color: #8562e9;
+  background-color: #222328;
+}
+
+.custom-card-platforms {
+  background-color: #222328; /* Color de fondo */
+  border: 2px solid #575757; /* Borde */
+  border-radius: 10px; /* Bordes redondeados */
+  padding: 1rem; /* Espaciado interno */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra */
+}
+
+.custom-card-games {
+  background-color: #222328; /* Color de fondo */
+  border: 2px solid #575757; /* Borde */
+  border-radius: 10px; /* Bordes redondeados */
+  color: #575757;
+}
+
+.custom-card-friends {
+  background-color: #222328; /* Color de fondo */
+  border-radius: 10px; /* Bordes redondeados */
+  color: #575757;
+}
+
+.circular-image {
+  width: 200px; /* Ajusta el tamaño según sea necesario */
+  height: 200px; /* Ajusta el tamaño según sea necesario */
+  border-radius: 50%;
+  object-fit: cover;
+  position: relative;
+  top: -25px; /* Ajusta según sea necesario */
+  left: 10px; /* Ajusta según sea necesario */
+}
+
+.user-information {
+  padding: 5px;
+  color: #aaaaaa;
+}
+
+.user-information h1,
+.user-information h2,
+.user-information h3 {
+  margin: 0; /* Unifica el margen superior */
+}
+
+.user-information p {
+  margin-bottom: 10px;
+}
+
+.user-information .social-links {
+  display: flex; /* Asegura que los enlaces se alineen en una fila */
+  flex-wrap: wrap;
+}
+
+.user-information .social-links a {
+  color: #aaaaaa;
+  text-decoration: none;
+  margin-right: 10px; /* Espaciado entre enlaces */
+}
+
+.user-information .social-links a:hover {
+  text-decoration: underline;
+  color: #8562e9;
+}
+
+.custon-border {
+  border-radius: 10px;
+}
