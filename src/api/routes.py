@@ -116,7 +116,7 @@ def login():
             print(usr_type)
             custom_claims = {"user_type": usr_type}
             access_token = create_access_token(identity = user_id, additional_claims=custom_claims)
-            return jsonify({"access_token":access_token,"username":query_user.username,"user_type":query_user.user_type.value})      
+            return jsonify({"access_token":access_token,"username":query_user.username,"user_type":query_user.user_type.value}),200      
         else: 
             return jsonify({"error":"Incorrect password"}),400
 
