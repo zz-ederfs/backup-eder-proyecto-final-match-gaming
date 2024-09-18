@@ -2,6 +2,8 @@ import React, { useContext, useEffect, useState } from "react";
 import logo from "../../img/logo/logo-marca.png"
 import { Context } from "../store/appContext.js";
 import {CardGame} from "../component/game_selection/card_game.jsx"
+import { Link } from "react-router-dom";
+
 export const GameSelection = () => {
 
     const { store, actions } = useContext(Context);
@@ -59,8 +61,19 @@ export const GameSelection = () => {
         </div>
             <footer className="text-center py-3 my-4">
                 <div className="d-flex justify-content-center gap-2 flex-wrap">
-                    <button className="btn btn-prev"><i className="fa-solid fa-arrow-left me-2"></i>Back</button>
-                    <button className="btn btn-next" disabled={!anyGameSelected}>Continue</button>
+                    <Link to="/platform-selection">
+                        <button className="btn btn-prev"><i className="fa-solid fa-arrow-left me-2"></i>Back</button>
+                    </Link>
+                    {anyGameSelected ? (
+                    <Link to="/registration-form">
+                        <button className="btn btn-prev">
+                            Continue<i className="fa-solid fa-arrow-right ms-2"></i>
+                        </button>
+                    </Link>
+                    ) : (
+                    <button className="btn btn-prev" disabled>
+                        Continue<i className="fa-solid fa-arrow-right ms-2"></i>
+                    </button>)}
                 </div>
             </footer>
         </div>
