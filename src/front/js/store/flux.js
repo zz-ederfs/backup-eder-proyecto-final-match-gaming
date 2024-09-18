@@ -14,10 +14,51 @@ const getState = ({ getStore, getActions, setStore }) => {
 					initial: "white"
 				}
 			],
+			token: localStorage.getItem("token") || null,  // Almacena el token del usuario
 			recommendedGames: [],
 			searchedGames: []
 		},
 		actions: {
+
+			loginUser: async (username, password) => {
+				try {
+					console.log("Action logi funcionando recibe: ",username,password);
+				  console.log("Backend URL:", process.env.BACKEND_URL);
+				  const response = await fetch(`${process.env.BACKEND_URL}/api/login`, {
+					method: "POST",
+					headers: {
+					  "Content-Type": "application/json",
+					  "Access-Control-Allow-Origin": "*",
+					},
+					body: JSON.stringify({ username, password }),
+				  });
+			  
+				  if (response.ok) {
+					const data = await response.json();
+					localStorage.setItem("token", data.access_token);  // Almacena el token
+					setStore({ token: data.access_token });
+					return true;
+				  } else {
+					console.error("Login error:", await response.json());
+					return false;
+				  }
+				} catch (error) {
+				  console.error("Error during login", error);
+				  return false;
+				}
+			  },
+			  
+			// Verificar si el usuario sigue autenticado
+			isAuthenticated: () => {
+				const store = getStore();
+				return store.token !== null; // Aquí podrías incluir una verificación adicional si el token es válido
+			},
+			// Función para cerrar sesión
+			logout: () => {
+				localStorage.removeItem("token");
+				setStore({ token: null, authMessage: null });
+			},
+
 			// Use getActions to call a function within a fuction
 			exampleFunction: () => {
 				getActions().changeColor(0, "green");
