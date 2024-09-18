@@ -1,7 +1,26 @@
-import React from "react";
+import React, { useState, useContext } from "react";
 import LogLogin from "../../img/login/LogLogin.png";
+import { Context } from "../store/appContext.js";  
+import { useNavigate } from 'react-router-dom';  
 
 const Login = () => {
+  const { store, actions } = useContext(Context);  
+  const [username, setUsername] = useState("");    
+  const [password, setPassword] = useState(""); 
+  const [errorMessage, setErrorMessage] = useState(""); // Para manejar mensajes de error
+  const navigate = useNavigate();  
+
+  const handleLogin = async (e) => {
+    e.preventDefault();  // Prevenimos la recarga de la página
+    const success = await actions.loginUser(username, password);  // Llamamos a la acción de login
+
+    if (success) {
+      navigate('/');  
+    } else {
+      setErrorMessage("Login failed. Please check your credentials.");
+    }
+  };
+
   return (
     <section className="py-5" style={{ backgroundColor: "#222328" }}>
       <div
@@ -14,7 +33,7 @@ const Login = () => {
         }}
       >
         <div className="row no-gutters text-white rounded shadow-sm">
-          {/* Columna derecha con la imagen, que ahora se muestra primero en pantallas pequeñas */}
+          {/* Columna derecha con la imagen */}
           <div className="col-12 col-md-6 p-0 order-first order-md-last rounded">
             <img
               src={LogLogin}
@@ -26,28 +45,24 @@ const Login = () => {
 
           {/* Columna izquierda para el formulario */}
           <div className="col-12 col-md-6 d-flex flex-column justify-content-center align-items-center align-items-md-start p-5 rounded">
-            <h1
-              className="text-center text-md-start fw-bold pt-3"
-              style={{ fontSize: "26px" }}
-            >
+            <h1 className="text-center text-md-start fw-bold pt-3" style={{ fontSize: "26px" }}>
               Find friends and play together <br /> today!
             </h1>
-            <h2
-              className="text-center text-primary fw-bold mt-3"
-              style={{ fontSize: "28px" }}
-            >
+            <h2 className="text-center text-primary fw-bold mt-3" style={{ fontSize: "28px" }}>
               LOGIN
             </h2>
 
-            <form className="w-75 mt-4 text-start">
-              {/* Campo Email */}
+            <form className="w-75 mt-4 text-start" onSubmit={handleLogin}>
+              {/* Campo Username */}
               <div className="form-group">
-                <label className="text-white fw-bold">Email Address</label>
+                <label className="text-white fw-bold">Username</label>
                 <input
-                  type="email"
+                  type="text"
                   className="form-control bg-secondary text-white rounded-3 p-2 border-0"
                   style={{ fontSize: "14px" }}
-                  placeholder="Enter your email"
+                  placeholder="Enter your username"
+                  value={username}   // Asignamos el valor del estado
+                  onChange={(e) => setUsername(e.target.value)}  // Manejamos el cambio de estado
                 />
               </div>
 
@@ -59,11 +74,20 @@ const Login = () => {
                   className="form-control bg-secondary text-white rounded-3 p-2 border-0"
                   style={{ fontSize: "14px" }}
                   placeholder="Enter your password"
+                  value={password}  // Asignamos el valor del estado
+                  onChange={(e) => setPassword(e.target.value)}  // Manejamos el cambio de estado
                 />
               </div>
 
+              {/* Mostrar mensaje de error si el login falla */}
+              {errorMessage && (
+                <div className="alert alert-danger mt-3" role="alert">
+                  {errorMessage}
+                </div>
+              )}
+
               {/* Botón Login */}
-              <button className="btn mt-4 w-100 text-white custom-button">
+              <button type="submit" className="btn mt-4 w-100 text-white custom-button">
                 Login
               </button>
 
