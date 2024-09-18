@@ -89,6 +89,23 @@ const getState = ({ getStore, getActions, setStore }) => {
 				//reset the global store
 				setStore({ demo: demo });
 			},
+			getUserProfile: async (userId) => {
+				try {
+				  const resp = await fetch(
+					`${process.env.BACKEND_URL}/api/profile_user/${userId}`
+				  );
+				  if (!resp.ok) {
+					const errorText = await resp.text();
+					console.error("Error loading user profile:", errorText);
+					throw new Error(`HTTP error! status: ${resp.status}`);
+				  }
+				  const data = await resp.json();
+				  setStore({ userProfile: data });
+				} catch (error) {
+				  console.error("Error loading message from backend", error);
+				}
+			  },
+			  
 			registerUser: async (data) => {
                 try {
                     let response = await fetch(`${process.env.BACKEND_URL}/api/users`, {
@@ -112,7 +129,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             },
 			getRecommendedGames_gameSelection: async (number_games) => {
                 try {
-                    const response = await fetch(`https://friendly-enigma-5gvgvj5j6x99fv4xp-3001.app.github.dev/api/games_recommended/${number_games}`);
+                    const response = await fetch(`${process.env.BACKEND_URL}/api/games_recommended/${number_games}`);
                     if (response.ok) {
                         const data = await response.json();
                         setStore({ recommendedGames: data });
@@ -127,7 +144,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			
 			getGameByName_gameSelection: async (game_name) => {
 				try {
-					const response = await fetch(`https://friendly-enigma-5gvgvj5j6x99fv4xp-3001.app.github.dev/api/search_game?name=${game_name}`);
+					const response = await fetch(`${process.env.BACKEND_URL}/api/search_game?name=${game_name}`);
 					if (response.ok) {
 						const data = await response.json();
 						setStore({ searchedGames: data });
