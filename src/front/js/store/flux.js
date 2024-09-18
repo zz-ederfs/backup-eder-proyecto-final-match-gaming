@@ -98,7 +98,22 @@ const getState = ({ getStore, getActions, setStore }) => {
 				} catch (error) {
 					console.log("Error loading message from backend", error);
 				}
-			}
+			},
+			getGamesRecomended: async (number_games = 3) => {
+				try {
+				  const resp = await fetch(
+					`${process.env.BACKEND_URL}/api/games_recommended/${number_games}`
+				  );
+				  if (!resp.ok) {
+					throw new Error("Network response was not ok");
+				  }
+				  const data = await resp.json();
+				  setStore({ games: data });
+				  return data;
+				} catch (error) {
+				  console.log("Error loading games from backend", error);
+				}
+			  }
 		}
 	};
 };
