@@ -1,8 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
-import { CardComponent } from "./cardMatchGamers.jsx";
-import { CardComponentGames } from "./cardGamesRecomended.jsx";
+import { CardComponentUser } from "./cardMatchGamers.jsx";
 import { SessionCard } from "./profile_sessionsCard.jsx";
 import perfil from "../../img/perfil/perfil-1.png";
 import sessionImage1 from "../../img/match/imagen-match.jpg";
@@ -157,46 +156,41 @@ export const UserInformation = ({
         <div>
           <section id="profile_games">
             <div className="row">
-              <div className="col-12 col-md-4">
-                <div className="rounded mt-5 custom-card-friends align-items-center text-center p-3">
-                  <h3 className="p-3">Amigos</h3>
-                  <div>
-                    <CardComponent
+              <div className="col-12 col-md-4 mt-5">
+                <div className="rounded custom-card-friends align-items-center text-center p-3">
+                  <h3 className="text-center">Amigos</h3>
+                  <div className="mt-5">
+                    <CardComponentUser
                       imageSrc={perfil}
                       username="@ Player Name 1"
                       buttonText="ver perfil"
                     />
-                    <CardComponent
+                    <CardComponentUser
                       imageSrc={perfil}
                       username="@ Player Name 2"
                       buttonText="ver perfil"
                     />
-                    <CardComponent
+                    <CardComponentUser
                       imageSrc={perfil}
                       username="@ Player Name 3"
                       buttonText="ver perfil"
                     />
-                    <CardComponent
+                    <CardComponentUser
                       imageSrc={perfil}
                       username="@ Player Name 4"
                       buttonText="ver perfil"
                     />
-                    <CardComponent
+                    <CardComponentUser
                       imageSrc={perfil}
                       username="@ Player Name 2"
                       buttonText="ver perfil"
                     />
-                    <CardComponent
+                    <CardComponentUser
                       imageSrc={perfil}
                       username="@ Player Name 3"
                       buttonText="ver perfil"
                     />
-                    <CardComponent
-                      imageSrc={perfil}
-                      username="@ Player Name 4"
-                      buttonText="ver perfil"
-                    />
-                    <CardComponent
+                    <CardComponentUser
                       imageSrc={perfil}
                       username="@ Player Name 4"
                       buttonText="ver perfil"
@@ -204,10 +198,10 @@ export const UserInformation = ({
                   </div>
                 </div>
               </div>
-              <div className="col-12 col-md-8">
-                <div className="rounded mt-5 custom-card-friends p-3 mt-3">
+              <div className="col-12 col-md-8 mt-5">
+                <div className="rounded custom-card-friends p-3">
                   <h3 className="text-start">Sesiones</h3>
-                  <div>
+                  <div className="mt-5">
                     <SessionCard
                       imageSrc={sessionImage1}
                       gameName="Let’s Play Starcraft"
@@ -242,7 +236,7 @@ export const UserInformation = ({
             </div>
           </section>
         </div>
-        <div>
+        {/* <div>
           <section id="profile_games_user">
             <div className="rounded mt-5">
               <div className="custom-bg-gamers">
@@ -273,7 +267,7 @@ export const UserInformation = ({
               </div>
             </div>
           </section>
-        </div>
+        </div> */}
       </div>
     </>
   );
