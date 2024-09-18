@@ -91,7 +91,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			},
 			registerUser: async (data) => {
                 try {
-                    let response = await fetch("https://friendly-enigma-5gvgvj5j6x99fv4xp-3001.app.github.dev/api/users", {
+                    let response = await fetch(`${process.env.BACKEND_URL}/api/users`, {
                         method: "POST",
                         body: JSON.stringify(data),
                         headers: {
