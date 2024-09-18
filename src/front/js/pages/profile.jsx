@@ -1,5 +1,5 @@
 import React from "react";
-import "../../styles/profile.css";
+// import "../../styles/profile.css";
 import { UserInformation } from "../component/profile_details.jsx";
 import imgperfil from "../../img/perfil/perfil-1.png";
 

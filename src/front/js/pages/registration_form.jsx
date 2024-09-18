@@ -3,6 +3,7 @@ import { Context } from "../store/appContext.js";
 import GenderMale from "../../img/register-form/GenderMale.png";
 import GenderFemale from "../../img/register-form/GenderFemale.png";
 import GenderIntersex from "../../img/register-form/GenderIntersex.png";
+import { useNavigate } from 'react-router-dom';
 import BackArrow from "../../img/register-form/VectorBack.png"; // Imagen para la flecha hacia atrás
 import { Link } from "react-router-dom";
 
@@ -13,6 +14,8 @@ export const RegistrationForm = () => {
     const [selectedGender, setSelectedGender] = useState("");
     const [selectedButton, setSelectedButton] = useState(null);
     const {actions, store} = useContext(Context)
+    const navigate = useNavigate();
+
 
     const sendData = (e) => {
         e.preventDefault()
@@ -46,7 +49,13 @@ export const RegistrationForm = () => {
             console.log(platform_selection)
             console.log(genre_selection)
             console.log("Formulario enviado", data);
-            actions.registerUser(data)
+            actions.registerUser(data).then(() => {
+
+                navigate('/');
+            }).catch((err) => {
+                console.error('Error en el registro:', err);
+                setError("Hubo un problema al registrar el usuario.");
+            });
             console.log(anyGenreSelected)
         }
     }
