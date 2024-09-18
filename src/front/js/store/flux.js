@@ -171,7 +171,28 @@ const getState = ({ getStore, getActions, setStore }) => {
 				} catch (error) {
 				  console.log("Error loading games from backend", error);
 				}
-			  }
+			  },
+			getFilteredGames:  async (filters) => {
+				try {
+					const response = await fetch(`${process.env.BACKEND_URL}/api/filter_game`, {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify(filters),
+					});
+			
+					if (response.ok) {
+						const data = await response.json();
+						setStore({ searchedGames: data });
+						console.log("Game search successful");
+					} else {
+						console.error("Error:", response);
+					}
+				} catch (error) {
+					console.log("Error loading message from backend", error);
+				}
+			}
 		}
 	};
 };
