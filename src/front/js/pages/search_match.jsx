@@ -92,7 +92,7 @@ export const SearchMatch = () => {
                     <div className="container">
                         <div className="row gallery justify-content-center mt-2">
                             {store.searchedGames.map(game => 
-                                <MatchGame name={game.name} imagen={game.background_image}/>
+                                <MatchGame name={game.name} imagen={game.background_image} id={game.id}/>
                             )}
                         </div>
                     </div>

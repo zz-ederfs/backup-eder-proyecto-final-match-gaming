@@ -16,7 +16,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 			],
 			token: localStorage.getItem("token") || null,  // Almacena el token del usuario
 			recommendedGames: [],
-			searchedGames: []
+			searchedGames: [],
+			specificGame: []
 		},
 		actions: {
 
@@ -191,6 +192,26 @@ const getState = ({ getStore, getActions, setStore }) => {
 					}
 				} catch (error) {
 					console.log("Error loading message from backend", error);
+				}
+			},
+			getSpecificGame: async (id_game) => {
+				try {
+
+					const response = await fetch(`${process.env.BACKEND_URL}/api/games/${id_game}`);
+					
+					if (!response.ok) {
+						throw new Error("Failed to fetch game data");
+					}
+			
+					const gameData = await response.json();
+
+					setStore({
+						specificGame: gameData
+					});
+			
+					return gameData;
+				} catch (error) {
+					console.error("There was an error fetching the game:", error);
 				}
 			}
 		}

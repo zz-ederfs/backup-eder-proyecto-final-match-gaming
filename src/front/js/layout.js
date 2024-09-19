@@ -39,7 +39,7 @@ const Layout = () => {
             <Route element={<Profile />} path="/profile" />
             <Route element={<Search />} path="/search" />
             <Route element={<SearchMatch />} path="/search-match" />
-            <Route element={<MatchResults />} path="/match-results" />
+            <Route element={<MatchResults />} path="/match-results/:id_game" />
             <Route element={<PlatformSelection />} path="/platform-selection" />
             <Route element={<GameSelection />} path="/game-selection" />
             <Route element={<RegistrationForm />} path="/registration-form" />

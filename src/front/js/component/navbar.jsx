@@ -41,7 +41,7 @@ export const Navbar = () => {
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link" to="/match-results">
+                  <Link className="nav-link" to="/search-match">
                     Match
                   </Link>
                 </li>
