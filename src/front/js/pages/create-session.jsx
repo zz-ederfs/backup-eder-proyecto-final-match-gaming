@@ -3,6 +3,7 @@ import logo from "../../img/logo/logo-marca.png"
 import { Link } from "react-router-dom";
 import { GameSession } from "../component/create_session/game_card_session.jsx";
 import { Context } from "../store/appContext.js";
+import { format, parseISO, addMinutes } from 'date-fns';
 import "../../styles/game_selection.css"
 
 export const CreateSession = () => {
@@ -10,23 +11,21 @@ export const CreateSession = () => {
     const { actions, store } = useContext(Context);
     const [gameSearch, setGameSearch] = useState(""); 
     const [filteredGames, setFilteredGames] = useState([]);
-    const [formData, setFormData] = useState({start_date: "", duration: "", language: "", session_type: "", region: "", capacity: "", description: "", background_img: null, game_id: ""});
-    const [backgroundImage, setBackgroundImage] = useState(null)
     const [formComplete, setFormComplete] = useState(false);
+    const [formData, setFormData] = useState({start_date: "", duration: "", language: "", session_type: "", region: "", capacity: "", description: ""});
 
-    useEffect(() => {
-        setFormData((prevData) => ({
-            ...prevData,
-            background_img: backgroundImage
-        }));
-    }, [backgroundImage]);
 
 
     useEffect(()=> {
         actions.getRecommendedGames_gameSelection(15)
     }, [])
 
+    useEffect(() => {
+        setFormComplete(isFormComplete());
+    }, [formData, gameSearch]);
+
     const isFormComplete = () => {
+        console.log(formData)
         return (
             formData.start_date !== "" &&
             formData.duration !== "" &&
@@ -35,43 +34,67 @@ export const CreateSession = () => {
             formData.region !== "" &&
             formData.capacity !== "" &&
             formData.description !== "" &&
-            formData.background_img !== null &&
-            filteredGames !== null
+            gameSearch.length > 0
         );
     }
     const handleSearch = (e) => {
         const value = e.target.value.toLowerCase();  
-    
+        console.log(value)
         if (value.length > 0) { 
             const filtered = store.recommendedGames.filter((game) => 
                 game.name.toLowerCase().includes(value)  
             );
             setFilteredGames(filtered);
-            console.log(filteredGames)
+
         } else {
             setFilteredGames([]);
         }
     };
 
+
     const handleGameSelect = (gameName) => {
         actions.getGameByName_gameSelection(gameName)
         setGameSearch(gameName); 
         setFilteredGames([]); 
-        console.log("searched game", store.searchedGames)
+
     };
 
     const getFormData = (e) => {
+        e.preventDefault();
+        const { name, value } = e.target;
+    
+        
+        setFormData({ ...formData, [name]: value });
+    
+        if (name === "start_date") {
+            console.log("Valor recibido:", value);
+    
+           
+            const localDate = parseISO(value);
+            console.log("Fecha local:", localDate);
+    
+            const offset = localDate.getTimezoneOffset(); 
+            const utcDate = new Date(localDate.getTime() + offset * 60000); 
+    
+            console.log("Fecha en UTC:", format(utcDate, "yyyy-MM-dd'T'HH:mm:ss'Z'"));
+            setFormData((prev) => ({ ...prev, [name]: format(utcDate, "yyyy-MM-dd'T'HH:mm:ss'Z'") }));
+        }
+    };
+    
+
+    const sendData = (e) => {
         e.preventDefault()
-        const {name, value} = e.target
-        setFormData({...formData, [name]: value})
-        setFormComplete(isFormComplete());
-        console.log(formComplete)
+        const data = {
+            ...formData,
+            game_id: store.searchedGames[0]?.id,
+            background_image: store.searchedGames[0]?.background_image
+        }
+
+        console.log("Data para enviar: ", data)
+
+
+
     }
-
-
-
-
-
     return(
         <div className="d-flex flex-column align-items-center min-vh-100 pb-3" style={{backgroundColor: "#16171C", color: "#fff"}}>
         <img src={logo} alt="Logo" style={{width: '40%', height: '80px', margin: '10px', objectFit: "contain"}} />
@@ -79,7 +102,7 @@ export const CreateSession = () => {
     <div className="container text-center">
         <div className="row justify-content-center align-items-center">
             <h2 className="my-4 fw-bold" >New Session</h2>
-            <form className="row g-3">
+            <form className="row g-3" onSubmit={(e) => e.preventDefault()}>
 
                 {/* Buscar-juego */}
                 <div className="col-12 col-lg-4">
@@ -109,7 +132,7 @@ export const CreateSession = () => {
                 <div className="row">
                     <div className="col-md-6 py-1">
                         <label className="form-label mb-1">Start Date</label>
-                        <input type="date" name="start_date" className="form-control" onChange={getFormData} style={{backgroundColor: "#222328", border: "1px solid #797979", color:"white", borderRadius: "10px"}}/>
+                        <input type="datetime-local" name="start_date" className="form-control" onChange={getFormData} style={{backgroundColor: "#222328", border: "1px solid #797979", color:"white", borderRadius: "10px"}}/>
                     </div>
                     <div className="col-md-6 py-1">
                         <label className="form-label mb-1">Duration</label>
@@ -151,12 +174,8 @@ export const CreateSession = () => {
                         <input name="capacity" type="number" onChange={getFormData} className="form-control" min="1" max="5" onInput={(e) => {if (e.target.value > 5) {e.target.value = 5}}} style={{backgroundColor: "#222328", border: "1px solid #797979", color:"white", borderRadius: "10px"}}/>
                     </div>
                     <div className="col-md-12 py-1">
-                        <label className="form-label mb-1">Background</label>
-                        <input type="file" className="form-control" onChange={(e) => setBackgroundImage(e.target.files[0])} style={{backgroundColor: "#222328", border: "1px solid #797979", color:"white", borderRadius: "10px"}}/>
-                    </div>
-                    <div className="col-md-12 py-1">
                         <label className="form-label mb-1">Description</label>
-                        <textarea class="form-control" name="description" onChange={getFormData} rows="2" style={{backgroundColor: "#222328", border: "1px solid #797979", color:"white", borderRadius: "10px"}}></textarea>
+                        <textarea class="form-control" name="description" onChange={getFormData} rows="4" style={{backgroundColor: "#222328", border: "1px solid #797979", color:"white", borderRadius: "10px"}}></textarea>
                     </div>
 
                 {/* boton */}
@@ -167,14 +186,14 @@ export const CreateSession = () => {
                                 <button className="btn btn-prev"><i className="fa-solid fa-arrow-left me-2"></i>Back</button>
                             </Link>
                             {formComplete ? (
-                            <Link to="/platform-selection">
-                                <button className="btn btn-prev">
-                                    Continue<i className="fa-solid fa-arrow-right ms-2"></i>
+
+                                <button className="btn btn-prev" onClick={sendData}>
+                                    Continue<i className="fa-solid fa-arrow-right ms-2" ></i>
                                 </button>
-                            </Link>
+
                             ) : (
                             <button className="btn btn-prev" disabled>
-                                Continue<i className="fa-solid fa-arrow-right ms-2"></i>
+                                Continue<i className="fa-solid fa-arrow-right ms-2" ></i>
                             </button>)}
                         </div>
                     </div>
