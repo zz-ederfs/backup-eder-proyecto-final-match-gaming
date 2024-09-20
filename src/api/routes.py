@@ -51,8 +51,7 @@ def get_specific_game(id_game):
         return jsonify({"error":"There was an unexpected error","msg":str(err)}),500 
 
 @api.route('/search_game', methods=['GET'])
-def get_game_by_name():
-    
+def get_game_by_name():    
     try:
         game_name = request.args.get("name")
         if game_name is None:
@@ -67,14 +66,19 @@ def get_game_by_name():
 
 @api.route('/favorites/<int:id_user>',methods=["GET"])
 def get_user_favorites(id_user):
+    user_fav_games =[]
     try:
         query_favs = db.session.query(Favorite_game).filter_by(user_id = id_user).all()
         if query_favs is None:
             return jsonify({"msg":"No favorites games yet"}),404
         else:
             serialize_favs = [fav.serialize() for fav in query_favs]
-            user_favs = [fav["game_id"] for fav in serialize_favs]
-            return jsonify({"user_id":id_user,"user_games_id":user_favs}),200
+            user_favs = [fav["game_id"] for fav in serialize_favs]    
+            for fav_id in user_favs:
+                fav_games = db.session.query(Game).filter_by(id= fav_id).first()
+                fav_games_serialize = fav_games.serialize()
+                user_fav_games.append(fav_games_serialize)
+            return jsonify({"user_id":id_user,"user_games":user_fav_games}),200
                 
     except Exception as err:
         return jsonify({"error":"There was an unexpected error","msg":str(err)}),500 
@@ -119,7 +123,33 @@ def post_fav_game():
 
 
 
+@api.route('/filter_game', methods=['POST'])
+def search_game():
+    try:
+        data = request.get_json()
 
+        game_name = data.get("name")
+        platform = data.get("platform")
+        type_game = data.get("type_game")
+
+        query = db.session.query(Game)
+
+        if game_name:
+            query = query.filter(Game.name.ilike(f'%{game_name}%'))
+
+        if platform:
+            query = query.filter(Game.platform.contains([platform])) 
+
+        if type_game:
+            query = query.filter(Game.type_game.contains([type_game]))  
+
+        games = query.all()
+        serialize_game = [game.serialize() for game in games]
+
+        return jsonify(serialize_game), 200
+
+    except Exception as err:
+        return jsonify({"error": "There was an unexpected error", "msg": str(err)}), 500
 
 """ USER ENDPOINT """
 
@@ -144,10 +174,53 @@ def post_new_user():
             new_user = User(username = data["username"], email = data["email"],password = hashed_password, first_name = data["first_name"],last_name = data["last_name"], age = data["age"],   gender = data["gender"],platform = data["platform"], type_game = data["type_game"], user_type ="NORMAL")
             db.session.add(new_user)   
             db.session.commit()
-            return jsonify({"msg":"User registered successfully"}),200        
+            new_user_id = db.session.query(User).filter_by(username = data["username"]).first()
+            serialize_new_user_id = new_user_id.serialize_id()
+            return jsonify({"msg":"User registered successfully","id_user":serialize_new_user_id}),200        
        
     except Exception as err:
         return jsonify({"error":"There was an unexpected error","msg":str(err)}),500 
+
+@api.route("/search_users", methods=["GET"])
+def search_user_name():
+    try:
+        user_name = request.args.get("name")
+        if user_name is None:
+            return jsonify({"msg:":"No user name was provided"}),400
+        else:
+            query_name = db.session.query(User).filter(User.username.ilike(f'%{user_name}%')).limit(4).all()
+            serialize_users = [name.serialize() for name in query_name]
+            return jsonify(serialize_users),200  
+        
+        
+    except Exception as err:
+        return jsonify({"error":"there was an unexpected error","msg":str(err)}),500
+  
+
+
+@api.route('/profile_user/<int:user_id>', methods=['GET'])
+def get_profile_user(user_id):
+    try:
+        user = db.session.query(User).filter_by(id=user_id).one_or_none()
+        if user is None:
+            return jsonify({"error": "User not found"}), 404
+        user_dict = {
+            'id': user.id,
+            'username': user.username,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'discord_id': user.discord_id or "N/A",
+            'steam_id': user.steam_id or "N/A",
+            'description': user.description or "No description available",
+            'profile_img_url': user.profile_img_url or "No image available",
+            'platform': [platform.value for platform in user.platform] if user.platform else []
+        }
+        return jsonify(user_dict), 200
+    except Exception as err:
+        return jsonify({"error": "There was an unexpected error", "msg": str(err)}), 500
+
+
+
 
 """ LOGIN AND AUTENTICATION """
 
@@ -193,53 +266,8 @@ def validate_access():
         return jsonify({"error":"There was an unexpected error","msg":str(err)}),500
 
 
-@api.route('/profile_user/<int:user_id>', methods=['GET'])
-def get_profile_user(user_id):
-    try:
-        user = db.session.query(User).filter_by(id=user_id).one_or_none()
-        if user is None:
-            return jsonify({"error": "User not found"}), 404
-        user_dict = {
-            'id': user.id,
-            'username': user.username,
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-            'discord_id': user.discord_id or "N/A",
-            'steam_id': user.steam_id or "N/A",
-            'description': user.description or "No description available",
-            'profile_img_url': user.profile_img_url or "No image available",
-            'platform': [platform.value for platform in user.platform] if user.platform else []
-        }
-        return jsonify(user_dict), 200
-    except Exception as err:
-        return jsonify({"error": "There was an unexpected error", "msg": str(err)}), 500
 
 
 
-@api.route('/filter_game', methods=['POST'])
-def search_game():
-    try:
-        data = request.get_json()
 
-        game_name = data.get("name")
-        platform = data.get("platform")
-        type_game = data.get("type_game")
 
-        query = db.session.query(Game)
-
-        if game_name:
-            query = query.filter(Game.name.ilike(f'%{game_name}%'))
-
-        if platform:
-            query = query.filter(Game.platform.contains([platform])) 
-
-        if type_game:
-            query = query.filter(Game.type_game.contains([type_game]))  
-
-        games = query.all()
-        serialize_game = [game.serialize() for game in games]
-
-        return jsonify(serialize_game), 200
-
-    except Exception as err:
-        return jsonify({"error": "There was an unexpected error", "msg": str(err)}), 500
