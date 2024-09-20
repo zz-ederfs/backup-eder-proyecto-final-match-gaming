@@ -101,16 +101,20 @@ class User(db.Model):
             "first_name":self.first_name,
             "last_name":self.last_name,
             "age":self.age,
-            "discord_id":self.discord_id,
-            "steam_id":self.steam_id,
-            "schedule":self.schedule.value,
-            "description":self.description,
-            "region":self.description.value,
+            "discord_id":self.discord_id if self.discord_id else None,
+            "steam_id":self.steam_id if self.steam_id else None,
+            "schedule":self.schedule.value if self.schedule else None,
+            "description":self.description if self.description else None,
+            "region":self.region.value if self.region else None,
             "gender":self.gender.value,
             "platform":[platform.value for platform in self.platform],
             "type_game":[type_game.value for type_game in self.type_game],
             "profile_img_url":self.profile_img_url           
             # do not serialize the password, its a security breach
+        }
+    def serialize_id(self):
+        return{
+            "id":self.id
         }
     
 
@@ -140,6 +144,8 @@ class Game(db.Model):
             "rating":self.rating            
             # do not serialize the password, its a security breach
         }
+  
+
 
 class Favorite_game(db.Model):    
     user_id = db.Column(db.Integer,db.ForeignKey('user.id'), primary_key=True, nullable=False)
@@ -208,7 +214,7 @@ class Session(db.Model):
     id = db.Column(db.Integer,primary_key=True)
     game_id = db.Column(db.Integer,db.ForeignKey('game.id'))
     host_id = db.Column(db.Integer,db.ForeignKey('user.id'))
-    start_date = db.Column(DateTime,unique=False,nullable=False,default=datetime.now(timezone.utc))
+    start_date = db.Column(DateTime,unique=False,nullable=False)
     duration = db.Column(Enum(Duration),unique=False,nullable=False)
     language = db.Column(Enum(Language),unique=False,nullable=False)
     session_type = db.Column(Enum(SessionType),unique=False,nullable=False)
