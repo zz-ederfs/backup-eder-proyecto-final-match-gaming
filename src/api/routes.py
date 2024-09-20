@@ -121,7 +121,20 @@ def post_fav_game():
         db.session.rollback()
         return jsonify({"error":"There was an unexpected error","msg":str(err)}),500 
 
-
+@api.route('/favorites_remove', methods=['DELETE'])
+def remove_fav():
+    id_user = request.args.get('id')
+    id_game = request.args.get('id_game')
+    query_fav = db.session.query(Favorite_game).filter_by(user_id = id_user, game_id= id_game).first()
+    try:
+        if query_fav is None:
+            return jsonify({"msg":"No existe el juego en favoritos"})
+        else:
+            db.session.delete(query_fav)
+            db.session.commit()
+            return jsonify({"msg":"La operacion fue exitosa"})
+    except Exception as err:
+        return jsonify({"error":"There was an unexpected error","msg":str(err)}),500    
 
 @api.route('/filter_game', methods=['POST'])
 def search_game():
