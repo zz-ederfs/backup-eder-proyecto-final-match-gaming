@@ -171,7 +171,7 @@ export const CreateSession = () => {
                     </div>
                     <div className="col-md-4 py-1">
                         <label className="form-label mb-1">Capacity</label>
-                        <input name="capacity" type="number" onChange={getFormData} className="form-control" min="1" max="5" onInput={(e) => {if (e.target.value > 5) {e.target.value = 5}}} style={{backgroundColor: "#222328", border: "1px solid #797979", color:"white", borderRadius: "10px"}}/>
+                        <input name="capacity" type="number" onChange={getFormData} className="form-control" min="1" max="5" onInput={(e) => {if (e.target.value > 30) {e.target.value = 5}}} style={{backgroundColor: "#222328", border: "1px solid #797979", color:"white", borderRadius: "10px"}}/>
                     </div>
                     <div className="col-md-12 py-1">
                         <label className="form-label mb-1">Description</label>
