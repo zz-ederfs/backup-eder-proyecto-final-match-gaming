@@ -89,7 +89,6 @@ export const RegistrationForm = () => {
   const anyGenreSelected = selectedGender.length > 0;
 
   return (
-    // Formulario de registro
     <section
       id="formRegistro"
       className="container-fluid py-5"
@@ -118,7 +117,7 @@ export const RegistrationForm = () => {
           </div>
 
           {/* Personal Info Fields */}
-          <div className="row mt-4 justify-content-center ">
+          <div className="row mt-4 justify-content-center">
             <div className="col-12 col-md-5">
               <label
                 htmlFor="username"
@@ -311,7 +310,7 @@ export const RegistrationForm = () => {
 
           {/* Password Fields */}
           <div className="row mt-4 justify-content-center">
-            <div className="col-12 col-md-8 mt-3 mx-3 mt-md-0">
+            <div className="col-12 col-md-8 mt-3 mx-3 mb-3 mt-md-0">
               <label
                 htmlFor="confirmPassword"
                 className="text-white"
@@ -403,7 +402,7 @@ export const RegistrationForm = () => {
           )}
 
           {/* Buttons */}
-          <div className="row mt-5 text-center  mb-5">
+          <div className="row mt-5 text-center mb-5">
             <div
               className="col-12 d-flex justify-content-center flex-nowrap"
               style={{ gap: "20px" }}
