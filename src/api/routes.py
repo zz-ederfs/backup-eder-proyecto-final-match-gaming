@@ -233,7 +233,26 @@ def get_profile_user(user_id):
         return jsonify({"error": "There was an unexpected error", "msg": str(err)}), 500
 
 
+@api.route('/update_user/<int:id_user>', methods=['PUT'])
+def update_user_info(id_user):
+    only_allowed = ["email","first_name","last_name","age","discord_id","steam_id","schedule","description","region","gender","platform","type_games","profile_img_url"]
+    data = request.get_json()
 
+    try:
+        query_user = db.session.query(User).filter_by(id=id_user).first()        
+        if query_user is None:
+            return jsonify({"msg":"No se encontro el usuario"})        
+        for item in only_allowed:
+            if item in data and data[item]:
+                setattr(query_user,item,data[item])
+        db.session.commit()        
+        return jsonify({"msg":"se actualizo la informacion satisfactoriamente"})
+    
+    except Exception as err:
+        db.session.rollback()
+        return jsonify({"error": "There was an unexpected error", "msg": str(err)}), 500
+
+    
 
 """ LOGIN AND AUTENTICATION """
 
