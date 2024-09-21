@@ -70,13 +70,11 @@ export const RegistrationForm = () => {
         e.preventDefault();
         const {name, value} = e.target
         setFormData({...formData, [name]: value})
-        console.log(formData)
 
     }
     const handleGenderSelect = (gender) => {
         setSelectedGender(gender);
         setFormData({ ...formData, gender: gender  });
-        console.log(selectedGender)
 
     };
 

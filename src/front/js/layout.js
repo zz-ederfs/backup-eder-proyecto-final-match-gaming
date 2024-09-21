@@ -17,6 +17,8 @@ import { PlatformSelection } from "./pages/platform_selection.jsx";
 import { GameSelection } from "./pages/game_selection.jsx";
 import { RegistrationForm } from "./pages/registration_form.jsx";
 import { GenreSelection } from "./pages/genre_selection.jsx";
+import { CreateSession } from "./pages/create-session.jsx";
+import { Session } from "./pages/session.jsx";
 
 //create your first component
 const Layout = () => {
@@ -44,6 +46,8 @@ const Layout = () => {
             <Route element={<GameSelection />} path="/game-selection" />
             <Route element={<RegistrationForm />} path="/registration-form" />
             <Route element={<GenreSelection />} path="/genre-selection" />
+            <Route element={<CreateSession/>} path="/create-session"/>
+            <Route element={<Session/>} path="/session"/>
             <Route element={<h1>Page Not Found</h1>} path="*" />
           </Routes>
           <Footer />
