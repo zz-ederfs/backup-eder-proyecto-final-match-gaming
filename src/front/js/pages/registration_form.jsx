@@ -55,20 +55,26 @@ export const RegistrationForm = () => {
         type_game: genre_selection,
       };
 
-      console.log(game_selection);
-      console.log(platform_selection);
-      console.log(genre_selection);
-      console.log("Formulario enviado", data);
       actions
         .registerUser(data)
-        .then(() => {
-          navigate("/login");
+        .then((response) => {
+          const id_user = response.id_user;
+          const fav_games = {
+            id_user: id_user.id,
+            fav_ids: [...game_selection],
+          };
+          actions.addFavoriteGames(fav_games).then(() => {
+            localStorage.removeItem("selectedGamesGenres");
+            localStorage.removeItem("selectedPlatforms");
+            localStorage.removeItem("selectedGameIds");
+            store.searchedGames = [];
+            navigate("/login");
+          });
         })
         .catch((err) => {
           console.error("Error en el registro:", err);
           setError("Hubo un problema al registrar el usuario.");
         });
-      console.log(anyGenreSelected);
     }
   };
 
@@ -76,12 +82,10 @@ export const RegistrationForm = () => {
     e.preventDefault();
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-    console.log(formData);
   };
   const handleGenderSelect = (gender) => {
     setSelectedGender(gender);
     setFormData({ ...formData, gender: gender });
-    console.log(selectedGender);
   };
 
   const handleButtonClick = (gender) => {};
