@@ -45,13 +45,24 @@ export const RegistrationForm = () => {
                 type_game: genre_selection,
             };
 
-            actions.registerUser(data).then(() => {
+            actions.registerUser(data).then((response) => {
 
-                navigate('/login');
+                const id_user = response.id_user;
+                const fav_games = {id_user: id_user.id, fav_ids: [...game_selection]};
+                actions.addFavoriteGames(fav_games).then(() => {
+                    localStorage.removeItem("selectedGamesGenres");
+                    localStorage.removeItem("selectedPlatforms");
+                    localStorage.removeItem("selectedGameIds");
+                    store.searchedGames = []
+                    navigate('/login');
+                })
+
+
             }).catch((err) => {
                 console.error('Error en el registro:', err);
                 setError("Hubo un problema al registrar el usuario.");
             });
+
         }
     }
 

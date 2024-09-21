@@ -16,7 +16,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 			],
 			token: localStorage.getItem("token") || null,  // Almacena el token del usuario
 			recommendedGames: [],
-			searchedGames: []
+			searchedGames: [],
+			specificGame: []
 		},
 		actions: {
 
@@ -107,27 +108,51 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 			  },
 			  
-			registerUser: async (data) => {
-                try {
-                    let response = await fetch(`${process.env.BACKEND_URL}/api/users`, {
-                        method: "POST",
-                        body: JSON.stringify(data),
-                        headers: {
-                            "Content-Type": "application/json"
-                        }
-                    });
-                    
-                    let responseData = await response.json();
-                    
-                    if (response.status === 200) {
-                        return true;
-                    } else {
-                        console.error("Error:", responseData);
-                    }
-                } catch (error) {
-                    console.log("Error loading message from backend", error)
-                }
-            },
+			  registerUser: async (data) => {
+				try {
+					let response = await fetch(`${process.env.BACKEND_URL}/api/users`, {
+						method: "POST",
+						body: JSON.stringify(data),
+						headers: {
+							"Content-Type": "application/json"
+						}
+					});
+					
+					let responseData = await response.json();	
+
+					if (response.status === 200) {
+						return responseData;
+					} else {
+						console.error("Error:", responseData);
+					}
+				} catch (error) {
+					console.log("Error loading message from backend", error);
+				}
+			},
+			addFavoriteGames: async (data) => {
+				try {
+
+					let response = await fetch(`${process.env.BACKEND_URL}/api/favorites`, {
+						method: "POST",
+						body: JSON.stringify(data),
+						headers: {
+							"Content-Type": "application/json"
+						}
+					});
+
+					let responseData = await response.json();
+		
+					if (response.status === 201) {
+						console.log("Juegos favoritos añadidos exitosamente:", responseData);
+						return responseData; 
+					} else {
+						console.error("Error al agregar favoritos:", responseData);
+						return null;
+					}
+				} catch (error) {
+					console.error("Error en la solicitud de agregar favoritos:", error);
+				}
+			},
 			getRecommendedGames_gameSelection: async (number_games) => {
                 try {
                     const response = await fetch(`${process.env.BACKEND_URL}/api/games_recommended/${number_games}`);
@@ -191,6 +216,26 @@ const getState = ({ getStore, getActions, setStore }) => {
 					}
 				} catch (error) {
 					console.log("Error loading message from backend", error);
+				}
+			},
+			getSpecificGame: async (id_game) => {
+				try {
+
+					const response = await fetch(`${process.env.BACKEND_URL}/api/games/${id_game}`);
+					
+					if (!response.ok) {
+						throw new Error("Failed to fetch game data");
+					}
+			
+					const gameData = await response.json();
+
+					setStore({
+						specificGame: gameData
+					});
+			
+					return gameData;
+				} catch (error) {
+					console.error("There was an error fetching the game:", error);
 				}
 			}
 		}
