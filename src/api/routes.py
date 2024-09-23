@@ -8,6 +8,8 @@ from flask_cors import CORS
 from sqlalchemy.sql import func
 from flask_jwt_extended import JWTManager, create_access_token,jwt_required, get_jwt_identity
 from flask_bcrypt import Bcrypt
+from datetime import datetime
+import pytz
 
 
 api = Blueprint('api', __name__)
@@ -323,5 +325,30 @@ def validate_access():
 
 
 
+""" SESIONES ENDPOINT """
 
+@api.route('/sessions',methods=['POST'])
+def post_new_session():
+    data = request.get_json()
+    required = {"id_game","id_host","start_date","duration","language","session_type","region","background_img","description","capacity"}
+    try:
+        for item in required:
+            if item not in data or not data[item]:
+                return jsonify({"msg":"Algunos campos estan vacios o no se han enviado"})
+            
+        check_time = datetime.fromisoformat(data["start_date"])   #ISO 8601 
+        if check_time.tzinfo is None:
+            check_time = check_time.replace(tzinfo=pytz.utc) 
+        else:
+            check_time = check_time.astimezone(pytz.utc)    
+        new_session = Session(game_id = data["id_game"], host_id = data["id_host"], start_date = data["start_date"], duration = data["duration"], language = data["language"], session_type = data["session_type"],region = data["region"], background_img = data["background_img"],description=data["description"], capacity = data["capacity"])    
+        db.session.add(new_session)
+        db.session.commit()
+        return jsonify({"msg":"sesion creada con exito"})       
+
+    except Exception as err:
+        return jsonify({"error":"There was an unexpected error","msg":str(err)}),500
+
+
+    
 
