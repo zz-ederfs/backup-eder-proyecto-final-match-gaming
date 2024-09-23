@@ -334,7 +334,7 @@ def post_new_session():
     try:
         for item in required:
             if item not in data or not data[item]:
-                return jsonify({"msg":"Algunos campos estan vacios o no se han enviado"})
+                return jsonify({"msg":"Algunos campos estan vacios o no se han enviado"}),400
             
         check_time = datetime.fromisoformat(data["start_date"])   #ISO 8601 
         if check_time.tzinfo is None:
@@ -344,11 +344,36 @@ def post_new_session():
         new_session = Session(game_id = data["id_game"], host_id = data["id_host"], start_date = data["start_date"], duration = data["duration"], language = data["language"], session_type = data["session_type"],region = data["region"], background_img = data["background_img"],description=data["description"], capacity = data["capacity"])    
         db.session.add(new_session)
         db.session.commit()
-        return jsonify({"msg":"sesion creada con exito"})       
+        return jsonify({"msg":"sesion creada con exito"}),200      
 
     except Exception as err:
         return jsonify({"error":"There was an unexpected error","msg":str(err)}),500
 
+@api.route('/sessions/<int:id_session>',methods=['GET'])
+def get_specific_session(id_session):
+    try:
+        query_session = db.session.query(Session).filter_by(id=id_session).first_or_404()
+        serialize_session = query_session.serialize()
+        return jsonify(serialize_session),200
+
+    except Exception as err:
+         return jsonify({"error":"There was an unexpected error","msg":str(err)}),500
+    
+@api.route('/sessions_user/<int:id_user>',methods=['GET'])
+def get_user_sessions(id_user):
+    try:
+        query_sessions = db.session.query(Session).filter_by(host_id = id_user).all()
+        if query_sessions is None:
+            return jsonify({"msg","No se encontraron sesiones"}),404
+        else:
+            serialize_session = [sess.serialize() for sess in query_sessions]
+            return jsonify(serialize_session),200
+        
+    except Exception as err:
+        return jsonify({"error":"There was an unexpected error","msg":str(err)}),500
+
+
+    
 
     
 
