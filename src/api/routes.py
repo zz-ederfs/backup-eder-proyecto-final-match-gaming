@@ -372,8 +372,21 @@ def get_user_sessions(id_user):
     except Exception as err:
         return jsonify({"error":"There was an unexpected error","msg":str(err)}),500
 
-
     
+@api.route('/sessions_remove', methods=['DELETE'])
+def remove_session():
+    id_session = request.args.get('id_session')    
+    query_session = db.session.query(Session).filter_by(id = id_session).first()
+    try:
+        if query_session is None:
+            return jsonify({"msg":"No existe la session"})
+        else:
+            db.session.delete(query_session)
+            db.session.commit()
+            return jsonify({"msg":"La operacion fue exitosa"})
+    except Exception as err:
+        return jsonify({"error":"There was an unexpected error","msg":str(err)}),500    
 
+        
     
 
