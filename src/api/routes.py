@@ -387,7 +387,7 @@ def remove_session():
     except Exception as err:
         return jsonify({"error":"There was an unexpected error","msg":str(err)}),500    
 
-@api.route('/session_join', methods=['POST'])
+@api.route('/sessions_join', methods=['POST'])
 def join_session():
     data = request.get_json()
     required = {"id_user","id_session"}
@@ -408,6 +408,34 @@ def join_session():
     except Exception as err:
         return jsonify({"error":"There was an unexpected error","msg":str(err)}),500
 
-
+@api.route('/sessions_members/<int:id_session>', methods=['GET'])
+def get_session_members(id_session):
+    members_data= []
+    not_members = []
+    query_session = db.session.query(Session_member).filter_by(session_id = id_session).all()
     
+    try:
+        if not query_session :
+            return jsonify({"msg":"No se encontraron miembros"}),404
+        else: 
+            for item in query_session:
+                member_id = item.participant_id
+                query_member = db.session.query(User).filter_by(id = member_id).first()
+                if query_member is not None:
+                    serialize_member = query_member.serialize()
+                    members_data.append(serialize_member)
+                else:
+                    not_members.append(member_id)  
+            if not_members:
+                return jsonify({"msg":"some members are not registered on the db","members_id":not_members}),404  
+
+        return jsonify(members_data),200        
+
+        
+    except Exception as err:
+        return jsonify({"error":"There was an unexpected error","msg":str(err)}),500
+
+
+
+
 
