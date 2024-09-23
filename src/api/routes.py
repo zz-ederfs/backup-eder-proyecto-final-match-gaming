@@ -379,14 +379,35 @@ def remove_session():
     query_session = db.session.query(Session).filter_by(id = id_session).first()
     try:
         if query_session is None:
-            return jsonify({"msg":"No existe la session"})
+            return jsonify({"msg":"No existe la session"}),404
         else:
             db.session.delete(query_session)
             db.session.commit()
-            return jsonify({"msg":"La operacion fue exitosa"})
+            return jsonify({"msg":"La operacion fue exitosa"}),200
     except Exception as err:
         return jsonify({"error":"There was an unexpected error","msg":str(err)}),500    
 
-        
+@api.route('/session_join', methods=['POST'])
+def join_session():
+    data = request.get_json()
+    required = {"id_user","id_session"}
+
+    try:
+        query_user = db.session.query(User).filter_by(id = data["id_user"]).first_or_404()
+        query_session = db.session.query(Session).filter_by(id = data["id_session"]).first_or_404()
+        query_participant = db.session.query(Session_member).filter_by(session_id = data["id_session"], participant_id = data["id_user"]).first()
+        if query_participant is not None:
+            return jsonify({"msg":"this user is already a member of this session"}),400
+
+        else:
+            new_member = Session_member(session_id = data["id_session"], participant_id = data["id_user"])
+            db.session.add(new_member)
+            db.session.commit()
+            return jsonify({"msg":"El miembro fue agregado correctamente"}),200
+
+    except Exception as err:
+        return jsonify({"error":"There was an unexpected error","msg":str(err)}),500
+
+
     
 
