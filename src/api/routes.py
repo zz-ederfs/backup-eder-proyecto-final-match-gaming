@@ -444,27 +444,22 @@ def get_user_sessions(id_user):
     except Exception as err:
         return jsonify({"error":"There was an unexpected error","msg":str(err)}),500
 
-
-@api.route('/sessions', methods=['GET'])
-def get_all_sessions():
+    
+@api.route('/sessions_remove', methods=['DELETE'])
+def remove_session():
+    id_session = request.args.get('id_session')    
+    query_session = db.session.query(Session).filter_by(id = id_session).first()
     try:
-        sessions = db.session.query(Session, Game.name, User.username)\
-            .join(Game, Session.game_id == Game.id)\
-            .join(User, Session.host_id == User.id)\
-            .all()
+        if query_session is None:
+            return jsonify({"msg":"No existe la session"})
+        else:
+            db.session.delete(query_session)
+            db.session.commit()
+            return jsonify({"msg":"La operacion fue exitosa"})
+    except Exception as err:
+        return jsonify({"error":"There was an unexpected error","msg":str(err)}),500    
 
         
-        session_list = []
-        for session, game_name, host_username in sessions:
-            session_data = session.serialize()  
-            session_data['game_name'] = game_name  
-            session_data['host_username'] = host_username 
-            session_list.append(session_data)
-
-        
-        return jsonify(session_list), 200
-    except Exception as e:
-        return jsonify({"message": str(e)}), 500
     
 @api.route('/sessions_remove', methods=['DELETE'])
 def remove_session():
@@ -579,6 +574,4 @@ def new_friend():
         return jsonify({"error":"There was an unexpected error","msg":str(err)}),500
     
     
-
-
 
