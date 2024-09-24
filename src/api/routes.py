@@ -340,7 +340,7 @@ def post_new_session():
         if check_time.tzinfo is None:
             check_time = check_time.replace(tzinfo=pytz.utc) 
         else:
-            check_time = check_time.astimezone(pytz.utc)    
+            check_time = check_time.astimezone(pytz.utc)                
         new_session = Session(game_id = data["id_game"], host_id = data["id_host"], start_date = data["start_date"], duration = data["duration"], language = data["language"], session_type = data["session_type"],region = data["region"], background_img = data["background_img"],description=data["description"], capacity = data["capacity"])    
         db.session.add(new_session)
         db.session.commit()
@@ -361,14 +361,23 @@ def get_specific_session(id_session):
     
 @api.route('/sessions_user/<int:id_user>',methods=['GET'])
 def get_user_sessions(id_user):
+    member_sessions = []  
     try:
         query_sessions = db.session.query(Session).filter_by(host_id = id_user).all()
-        if query_sessions is None:
-            return jsonify({"msg","No se encontraron sesiones"}),404
+        query_session_member = db.session.query(Session_member).filter_by(participant_id = id_user).all()
+        if not query_sessions and not query_session_member:
+            return jsonify({"msg","No se encotraron sesiones como host o participante"}),404
         else:
-            serialize_session = [sess.serialize() for sess in query_sessions]
-            return jsonify(serialize_session),200
-        
+            hosted_sessions = [item.serialize() for item in query_sessions]
+            for item in query_session_member:
+                member_session_id = item.session_id
+                query_member_session = db.session.query(Session).filter_by(id = member_session_id).first()
+                if query_member_session:
+                    serialize_member_session = query_member_session.serialize()
+                    member_sessions.append(serialize_member_session)
+
+        return jsonify({"hosted":hosted_sessions,"member":member_sessions}),200  
+           
     except Exception as err:
         return jsonify({"error":"There was an unexpected error","msg":str(err)}),500
 
@@ -412,8 +421,7 @@ def join_session():
 def get_session_members(id_session):
     members_data= []
     not_members = []
-    query_session = db.session.query(Session_member).filter_by(session_id = id_session).all()
-    
+    query_session = db.session.query(Session_member).filter_by(session_id = id_session).all()    
     try:
         if not query_session :
             return jsonify({"msg":"No se encontraron miembros"}),404
@@ -429,8 +437,7 @@ def get_session_members(id_session):
             if not_members:
                 return jsonify({"msg":"some members are not registered on the db","members_id":not_members}),404  
 
-        return jsonify(members_data),200        
-
+        return jsonify(members_data),200
         
     except Exception as err:
         return jsonify({"error":"There was an unexpected error","msg":str(err)}),500
