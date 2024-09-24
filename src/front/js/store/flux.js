@@ -20,7 +20,9 @@ const getState = ({ getStore, getActions, setStore }) => {
 			recommendedGames: [],
 			searchedGames: [],
 			specificGame: [],
-			usersByGame: []
+			usersByGame: [],
+			sessions: [],
+			specificSession: []
 		},
 		actions: {
 
@@ -207,7 +209,6 @@ const getState = ({ getStore, getActions, setStore }) => {
 					if (response.ok) {
 						const data = await response.json();
 						setStore({ searchedGames: data });
-						console.log("Game search successful");
 					} else {
 						console.error("Error:", response.statusText);
 					}
@@ -291,7 +292,99 @@ const getState = ({ getStore, getActions, setStore }) => {
 				} catch (error) {
 					console.log("Error loading message from backend: ", error);
 				}
+			},
+			// Funcion para crear sesion 
+			createSession : async(data) => {
+				try{
+					const response = await fetch(`${process.env.BACKEND_URL}/api/sessions`, {
+						method: "POST",
+						body: JSON.stringify(data),
+						headers: {
+							"Content-Type": "application/json"	
+						}
+					});
+
+					let responseData = await response.json();
+
+					if(response.status === 200){
+						console.log("Session created succesfully")
+					}
+					else {
+						console.error("Error al crear sesion: ", responseData)
+					}
+				}
+				catch (error){
+					console.error("Error en la solicitud", error)
+				}
+			},
+			getSessions: async () => {
+				try {
+					const response = await fetch(`${process.env.BACKEND_URL}/api/sessions`);
+			
+					if (response.ok) {
+						const data = await response.json();
+			
+						const formattedData = data.map(session => {
+							const dateObject = new Date(session.start_date);
+							
+							const formattedDate = 
+								`${String(dateObject.getUTCDate()).padStart(2, '0')}/${String(dateObject.getUTCMonth() + 1).padStart(2, '0')}/${dateObject.getUTCFullYear()}`;
+							
+							const formattedTime = 
+								`${String(dateObject.getUTCHours()).padStart(2, '0')}:${String(dateObject.getUTCMinutes()).padStart(2, '0')}:${String(dateObject.getUTCSeconds()).padStart(2, '0')}`;
+			
+							return {
+								...session,
+								formattedDate,
+								formattedTime
+							};
+						});
+			
+						setStore({ sessions: formattedData });
+					} else {
+						console.error("Error:", response.statusText);
+					}
+				} catch (error) {
+					console.error("Error en la solicitud:", error);
+				}
+			},
+
+			getSession: async (session_id) => {
+				try {
+					const response = await fetch(`${process.env.BACKEND_URL}/api/sessions/${session_id}`, {
+						method: 'GET',
+						headers: {
+							'Content-Type': 'application/json',
+						},
+					});
+			
+					if (response.ok) {
+						const session = await response.json(); 
+
+						const dateObject = new Date(session.start_date);
+						
+						const formattedDate = 
+							`${String(dateObject.getUTCDate()).padStart(2, '0')}/${String(dateObject.getUTCMonth() + 1).padStart(2, '0')}/${dateObject.getUTCFullYear()}`;
+						
+						const formattedTime = 
+							`${String(dateObject.getUTCHours()).padStart(2, '0')}:${String(dateObject.getUTCMinutes()).padStart(2, '0')}:${String(dateObject.getUTCSeconds()).padStart(2, '0')}`;
+			
+						const formattedSession = {
+							...session,
+							formattedDate,
+							formattedTime
+						};
+			
+						setStore({ specificSession: formattedSession }); 
+						console.log(getStore().specificSession)
+					} else {
+						console.error("Error: ", response.statusText);
+					}
+				} catch (error) {
+					console.log("Error loading message from backend: ", error);
+				}
 			}
+			
 		}
 	};
 };

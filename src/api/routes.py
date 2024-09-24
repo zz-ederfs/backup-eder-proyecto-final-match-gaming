@@ -281,6 +281,49 @@ def update_user_info(id_user):
         db.session.rollback()
         return jsonify({"error": "There was an unexpected error", "msg": str(err)}), 500
 
+
+@api.route('/filter_user', methods=['POST'])
+def search_user():
+    try:
+        data = request.get_json()
+
+        username = data.get("username")
+        type_game = data.get("type_game")
+        platform = data.get("platform")
+        region = data.get("region")
+        schedule = data.get("schedule")
+
+        query = db.session.query(User)
+
+       
+        if username:
+            query = query.filter(User.username.ilike(f'%{username}%'))
+
+
+        if type_game:
+            query = query.filter(User.type_game.contains([type_game]))
+
+
+        if platform:
+            query = query.filter(User.platform.contains([platform]))
+
+
+        if region:
+            query = query.filter(User.region == region)
+
+
+        if schedule:
+            query = query.filter(User.schedule == schedule)
+
+        users = query.all()
+        serialize_users = [user.serialize() for user in users]
+
+        return jsonify(serialize_users), 200
+
+    except Exception as err:
+        return jsonify({"error": "There was an unexpected error", "msg": str(err)}), 500
+
+
     
 
 """ LOGIN AND AUTENTICATION """
@@ -356,15 +399,28 @@ def post_new_session():
     except Exception as err:
         return jsonify({"error":"There was an unexpected error","msg":str(err)}),500
 
-@api.route('/sessions/<int:id_session>',methods=['GET'])
+@api.route('/sessions/<int:id_session>', methods=['GET'])
 def get_specific_session(id_session):
     try:
-        query_session = db.session.query(Session).filter_by(id=id_session).first_or_404()
-        serialize_session = query_session.serialize()
-        return jsonify(serialize_session),200
+        
+        query_session = db.session.query(Session, Game.name, User.username)\
+            .join(Game, Session.game_id == Game.id)\
+            .join(User, Session.host_id == User.id)\
+            .filter(Session.id == id_session)\
+            .first_or_404()
 
+        session, game_name, host_username = query_session
+        
+        
+        session_data = session.serialize()  
+        session_data['game_name'] = game_name  
+        session_data['host_username'] = host_username 
+
+        return jsonify(session_data), 200
+        
     except Exception as err:
-         return jsonify({"error":"There was an unexpected error","msg":str(err)}),500
+        return jsonify({"error": "There was an unexpected error", "msg": str(err)}), 500
+
     
 @api.route('/sessions_user/<int:id_user>',methods=['GET'])
 def get_user_sessions(id_user):
@@ -388,6 +444,27 @@ def get_user_sessions(id_user):
     except Exception as err:
         return jsonify({"error":"There was an unexpected error","msg":str(err)}),500
 
+
+@api.route('/sessions', methods=['GET'])
+def get_all_sessions():
+    try:
+        sessions = db.session.query(Session, Game.name, User.username)\
+            .join(Game, Session.game_id == Game.id)\
+            .join(User, Session.host_id == User.id)\
+            .all()
+
+        
+        session_list = []
+        for session, game_name, host_username in sessions:
+            session_data = session.serialize()  
+            session_data['game_name'] = game_name  
+            session_data['host_username'] = host_username 
+            session_list.append(session_data)
+
+        
+        return jsonify(session_list), 200
+    except Exception as e:
+        return jsonify({"message": str(e)}), 500
     
 @api.route('/sessions_remove', methods=['DELETE'])
 def remove_session():
