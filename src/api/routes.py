@@ -386,8 +386,12 @@ def post_new_session():
             check_time = check_time.astimezone(pytz.utc)
         query_game = db.session.query(Game).filter_by(id = data["id_game"]).first()
         serialize_game = query_game.serialize()
-        session_game_name = serialize_game["name"]                    
-        new_session = Session(game_id = data["id_game"], game_name=session_game_name, host_id = data["id_host"], start_date = data["start_date"], duration = data["duration"], language = data["language"], session_type = data["session_type"],region = data["region"], background_img = data["background_img"],description=data["description"], capacity = data["capacity"])    
+        session_game_name = serialize_game["name"]
+        query_user = db.session.query(User).filter_by(id = data["id_host"]).first()
+        serialize_user = query_user.serialize()
+        session_username= serialize_user["username"]
+        session_profile_img = serialize_user["profile_img_url"]                    
+        new_session = Session(game_id = data["id_game"], game_name=session_game_name, host_id = data["id_host"], host_username = session_username, host_profile_image = session_profile_img, start_date = data["start_date"], duration = data["duration"], language = data["language"], session_type = data["session_type"],region = data["region"], background_img = data["background_img"],description=data["description"], capacity = data["capacity"])    
         db.session.add(new_session)
         db.session.commit()
         return jsonify({"msg":"sesion creada con exito"}),200      
@@ -521,7 +525,7 @@ def send_friend_invite():
 
 @api.route('/friend_accept',methods=['POST'])
 def new_friend():
-    required = {"user_id_first","user_id_second"}
+    required = {"user_id_first","user_id_second"} # FIRST = QUIEN QUIERE SER TU AMIGO , SECOND = TU ID
     data = request.get_json()
     try:
         for item in required:
