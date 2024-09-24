@@ -444,101 +444,27 @@ def get_user_sessions(id_user):
     except Exception as err:
         return jsonify({"error":"There was an unexpected error","msg":str(err)}),500
 
-    
-@api.route('/sessions_remove', methods=['DELETE'])
-def remove_session():
-    id_session = request.args.get('id_session')    
-    query_session = db.session.query(Session).filter_by(id = id_session).first()
+
+@api.route('/sessions', methods=['GET'])
+def get_all_sessions():
     try:
-        if query_session is None:
-            return jsonify({"msg":"No existe la session"})
-        else:
-            db.session.delete(query_session)
-            db.session.commit()
-            return jsonify({"msg":"La operacion fue exitosa"})
-    except Exception as err:
-        return jsonify({"error":"There was an unexpected error","msg":str(err)}),500    
+        sessions = db.session.query(Session, Game.name, User.username)\
+            .join(Game, Session.game_id == Game.id)\
+            .join(User, Session.host_id == User.id)\
+            .all()
 
-@api.route('/sessions_join', methods=['POST'])
-def join_session():
-    data = request.get_json()
-    #required = {"id_user","id_session"}
-
-    try:
-        query_user = db.session.query(User).filter_by(id = data["id_user"]).first_or_404()
-        query_session = db.session.query(Session).filter_by(id = data["id_session"]).first_or_404()
-        query_participant = db.session.query(Session_member).filter_by(session_id = data["id_session"], participant_id = data["id_user"]).first()
-        if query_participant is not None:
-            return jsonify({"msg":"this user is already a member of this session"}),400
-
-        else:
-            new_member = Session_member(session_id = data["id_session"], participant_id = data["id_user"])
-            db.session.add(new_member)
-            db.session.commit()
-            return jsonify({"msg":"El miembro fue agregado correctamente"}),200
-
-    except Exception as err:
-        return jsonify({"error":"There was an unexpected error","msg":str(err)}),500
-
-@api.route('/sessions_members/<int:id_session>', methods=['GET'])
-def get_session_members(id_session):
-    members_data= []
-    not_members = []
-    query_session = db.session.query(Session_member).filter_by(session_id = id_session).all()    
-    try:
-        if not query_session :
-            return jsonify({"msg":"No se encontraron miembros"}),404
-        else: 
-            for item in query_session:
-                member_id = item.participant_id
-                query_member = db.session.query(User).filter_by(id = member_id).first()
-                if query_member is not None:
-                    serialize_member = query_member.serialize()
-                    members_data.append(serialize_member)
-                else:
-                    not_members.append(member_id)  
-            if not_members:
-                return jsonify({"msg":"some members are not registered on the db","members_id":not_members}),404  
-
-        return jsonify(members_data),200
         
-    except Exception as err:
-        return jsonify({"error":"There was an unexpected error","msg":str(err)}),500
+        session_list = []
+        for session, game_name, host_username in sessions:
+            session_data = session.serialize()  
+            session_data['game_name'] = game_name  
+            session_data['host_username'] = host_username 
+            session_list.append(session_data)
 
-""" FRIENDSHIP ENDPOINT """
-@api.route('/friend_request',methods=['POST'])
-def send_friend_invite():
-    required = {"user_send_invite","user_receive_invite"}
-    data = request.get_json()
-    try:
-        for item in required:
-            if item not in data or not data[item]:
-                return jsonify({"msg":"Faltan datos o existen valores vacios"}),400
-            else:
-                new_request = Friend_request(user_send_invite = data["user_send_invite"], user_receive_invite = data["user_receive_invite"])
-                db.session.add(new_request)
-                db.session.commit()
-                return jsonify({"msg":"invitacion fue enviado con exito"}),200
-    except Exception as err:
-        return jsonify({"error":"There was an unexpected error","msg":str(err)}),500
-
-
-@api.route('/friend_accept',methods=['POST'])
-def new_friend():
-    required = {"user_id_first","user_id_second"} # FIRST = QUIEN QUIERE SER TU AMIGO , SECOND = TU ID
-    data = request.get_json()
-    try:
-        for item in required:
-            if item not in data or not data[item]:
-                return jsonify({"msg":"Faltan datos o existen valores vacios"}),400
-            else:
-                new_friendship = Friendship(user_id_first = data["user_id_first"], user_id_second = data["user_id_second"])
-                db.session.add(new_friendship)
-                db.session.commit()
-                return jsonify({"msg":"La amistad se registro con exito"}),200
-    except Exception as err:
-        return jsonify({"error":"There was an unexpected error","msg":str(err)}),500
-    
+        
+        return jsonify(session_list), 200
+    except Exception as e:
+        return jsonify({"message": str(e)}), 500
     
 @api.route('/sessions_remove', methods=['DELETE'])
 def remove_session():
