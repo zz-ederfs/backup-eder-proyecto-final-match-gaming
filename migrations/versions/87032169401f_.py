@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 70b739c761ce
+Revision ID: 87032169401f
 Revises: 
-Create Date: 2024-09-24 01:41:38.540582
+Create Date: 2024-09-24 19:53:29.639412
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = '70b739c761ce'
+revision = '87032169401f'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -82,6 +82,8 @@ def upgrade():
     sa.Column('game_id', sa.Integer(), nullable=True),
     sa.Column('game_name', sa.String(length=200), nullable=False),
     sa.Column('host_id', sa.Integer(), nullable=True),
+    sa.Column('host_username', sa.String(length=80), nullable=False),
+    sa.Column('host_profile_image', sa.String(length=200), nullable=True),
     sa.Column('start_date', sa.DateTime(), nullable=False),
     sa.Column('duration', sa.Enum('UNK', 'ONE', 'TWO', 'THREE', name='duration'), nullable=False),
     sa.Column('language', sa.Enum('ENGLISH', 'SPANISH', 'PORTUGUESE', name='language'), nullable=False),
@@ -94,7 +96,8 @@ def upgrade():
     sa.Column('updated_at', sa.DateTime(), nullable=False),
     sa.ForeignKeyConstraint(['game_id'], ['game.id'], ),
     sa.ForeignKeyConstraint(['host_id'], ['user.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('host_username')
     )
     op.create_table('subscription',
     sa.Column('id', sa.Integer(), nullable=False),
