@@ -213,6 +213,7 @@ class Subscription(db.Model):
 class Session(db.Model):
     id = db.Column(db.Integer,primary_key=True)
     game_id = db.Column(db.Integer,db.ForeignKey('game.id'))
+    game_name = db.Column(db.String(200),unique=False,nullable=False)
     host_id = db.Column(db.Integer,db.ForeignKey('user.id'))
     start_date = db.Column(db.DateTime,unique=False,nullable=False)
     duration = db.Column(Enum(Duration),unique=False,nullable=False)
@@ -233,6 +234,7 @@ class Session(db.Model):
         return {
             "id": self.id,
             "game_id":self.game_id,
+            "game_name":self.game_name,
             "host_id":self.host_id,
             "start_date":self.start_date,
             "duration":self.duration.value,

@@ -340,8 +340,11 @@ def post_new_session():
         if check_time.tzinfo is None:
             check_time = check_time.replace(tzinfo=pytz.utc) 
         else:
-            check_time = check_time.astimezone(pytz.utc)    
-        new_session = Session(game_id = data["id_game"], host_id = data["id_host"], start_date = data["start_date"], duration = data["duration"], language = data["language"], session_type = data["session_type"],region = data["region"], background_img = data["background_img"],description=data["description"], capacity = data["capacity"])    
+            check_time = check_time.astimezone(pytz.utc)
+        query_game = db.session.query(Game).filter_by(id = data["id_game"]).first()
+        serialize_game = query_game.serialize()
+        session_game_name = serialize_game["name"]                    
+        new_session = Session(game_id = data["id_game"], game_name=session_game_name, host_id = data["id_host"], start_date = data["start_date"], duration = data["duration"], language = data["language"], session_type = data["session_type"],region = data["region"], background_img = data["background_img"],description=data["description"], capacity = data["capacity"])    
         db.session.add(new_session)
         db.session.commit()
         return jsonify({"msg":"sesion creada con exito"}),200      
@@ -361,19 +364,122 @@ def get_specific_session(id_session):
     
 @api.route('/sessions_user/<int:id_user>',methods=['GET'])
 def get_user_sessions(id_user):
+    member_sessions = []  
     try:
         query_sessions = db.session.query(Session).filter_by(host_id = id_user).all()
-        if query_sessions is None:
-            return jsonify({"msg","No se encontraron sesiones"}),404
+        query_session_member = db.session.query(Session_member).filter_by(participant_id = id_user).all()
+        if not query_sessions and not query_session_member:
+            return jsonify({"msg","No se encotraron sesiones como host o participante"}),404
         else:
-            serialize_session = [sess.serialize() for sess in query_sessions]
-            return jsonify(serialize_session),200
+            hosted_sessions = [item.serialize() for item in query_sessions]
+            for item in query_session_member:
+                member_session_id = item.session_id
+                query_member_session = db.session.query(Session).filter_by(id = member_session_id).first()
+                if query_member_session:
+                    serialize_member_session = query_member_session.serialize()
+                    member_sessions.append(serialize_member_session)
+
+        return jsonify({"hosted":hosted_sessions,"member":member_sessions}),200  
+           
+    except Exception as err:
+        return jsonify({"error":"There was an unexpected error","msg":str(err)}),500
+
+    
+@api.route('/sessions_remove', methods=['DELETE'])
+def remove_session():
+    id_session = request.args.get('id_session')    
+    query_session = db.session.query(Session).filter_by(id = id_session).first()
+    try:
+        if query_session is None:
+            return jsonify({"msg":"No existe la session"}),404
+        else:
+            db.session.delete(query_session)
+            db.session.commit()
+            return jsonify({"msg":"La operacion fue exitosa"}),200
+    except Exception as err:
+        return jsonify({"error":"There was an unexpected error","msg":str(err)}),500    
+
+@api.route('/sessions_join', methods=['POST'])
+def join_session():
+    data = request.get_json()
+    #required = {"id_user","id_session"}
+
+    try:
+        query_user = db.session.query(User).filter_by(id = data["id_user"]).first_or_404()
+        query_session = db.session.query(Session).filter_by(id = data["id_session"]).first_or_404()
+        query_participant = db.session.query(Session_member).filter_by(session_id = data["id_session"], participant_id = data["id_user"]).first()
+        if query_participant is not None:
+            return jsonify({"msg":"this user is already a member of this session"}),400
+
+        else:
+            new_member = Session_member(session_id = data["id_session"], participant_id = data["id_user"])
+            db.session.add(new_member)
+            db.session.commit()
+            return jsonify({"msg":"El miembro fue agregado correctamente"}),200
+
+    except Exception as err:
+        return jsonify({"error":"There was an unexpected error","msg":str(err)}),500
+
+@api.route('/sessions_members/<int:id_session>', methods=['GET'])
+def get_session_members(id_session):
+    members_data= []
+    not_members = []
+    query_session = db.session.query(Session_member).filter_by(session_id = id_session).all()    
+    try:
+        if not query_session :
+            return jsonify({"msg":"No se encontraron miembros"}),404
+        else: 
+            for item in query_session:
+                member_id = item.participant_id
+                query_member = db.session.query(User).filter_by(id = member_id).first()
+                if query_member is not None:
+                    serialize_member = query_member.serialize()
+                    members_data.append(serialize_member)
+                else:
+                    not_members.append(member_id)  
+            if not_members:
+                return jsonify({"msg":"some members are not registered on the db","members_id":not_members}),404  
+
+        return jsonify(members_data),200
         
     except Exception as err:
         return jsonify({"error":"There was an unexpected error","msg":str(err)}),500
 
+""" FRIENDSHIP ENDPOINT """
+@api.route('/friend_request',methods=['POST'])
+def send_friend_invite():
+    required = {"user_send_invite","user_receive_invite"}
+    data = request.get_json()
+    try:
+        for item in required:
+            if item not in data or not data[item]:
+                return jsonify({"msg":"Faltan datos o existen valores vacios"}),400
+            else:
+                new_request = Friend_request(user_send_invite = data["user_send_invite"], user_receive_invite = data["user_receive_invite"])
+                db.session.add(new_request)
+                db.session.commit()
+                return jsonify({"msg":"invitacion fue enviado con exito"}),200
+    except Exception as err:
+        return jsonify({"error":"There was an unexpected error","msg":str(err)}),500
 
+
+@api.route('/friend_accept',methods=['POST'])
+def new_friend():
+    required = {"user_id_first","user_id_second"}
+    data = request.get_json()
+    try:
+        for item in required:
+            if item not in data or not data[item]:
+                return jsonify({"msg":"Faltan datos o existen valores vacios"}),400
+            else:
+                new_friendship = Friendship(user_id_first = data["user_id_first"], user_id_second = data["user_id_second"])
+                db.session.add(new_friendship)
+                db.session.commit()
+                return jsonify({"msg":"La amistad se registro con exito"}),200
+    except Exception as err:
+        return jsonify({"error":"There was an unexpected error","msg":str(err)}),500
+    
     
 
-    
+
 
