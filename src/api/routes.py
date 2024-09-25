@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Game, Favorite_game, Friend_request, Friendship, Subscription, Session, Session_member, Platform
+from api.models import db, User, Game, Favorite_game, Friend_request, Friendship, Subscription, Session, Session_member
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from sqlalchemy.sql import func
@@ -244,10 +244,8 @@ def search_user_name():
             serialize_users = [name.serialize() for name in query_name]
             return jsonify(serialize_users),200  
         
-        
     except Exception as err:
-        return jsonify({"error":"there was an unexpected error","msg":str(err)}),500
-  
+        return jsonify({"error":"there was an unexpected error","msg":str(err)}),500  
 
 
 @api.route('/profile/<int:user_id>', methods=['GET'])
@@ -525,8 +523,6 @@ def remove_session():
 def join_session():
     data = request.get_json()
     #required = {"id_user","id_session"}
-    #required = {"id_user","id_session"}
-
     try:
         query_user = db.session.query(User).filter_by(id = data["id_user"]).first_or_404()
         query_session = db.session.query(Session).filter_by(id = data["id_session"]).first_or_404()
@@ -569,24 +565,68 @@ def get_session_members(id_session):
         return jsonify({"error":"There was an unexpected error","msg":str(err)}),500
 
 """ FRIENDSHIP ENDPOINT """
-@api.route('/friend_request',methods=['POST'])
+@api.route('/friends_request',methods=['POST'])
 def send_friend_invite():
     required = {"user_send_invite","user_receive_invite"}
     data = request.get_json()
     try:
+        query_request = db.session.query(Friend_request).filter_by(user_send_invite = data["user_send_invite"], user_receive_invite = data["user_receive_invite"]).first()
+        if query_request is not None:
+            return jsonify({"msg":"Este pedido de amistad ya existe"}),400
         for item in required:
             if item not in data or not data[item]:
                 return jsonify({"msg":"Faltan datos o existen valores vacios"}),400
-            else:
-                new_request = Friend_request(user_send_invite = data["user_send_invite"], user_receive_invite = data["user_receive_invite"])
-                db.session.add(new_request)
-                db.session.commit()
-                return jsonify({"msg":"invitacion fue enviado con exito"}),200
+            
+        query_send_user = db.session.query(User).filter_by(id = data["user_send_invite"]).first_or_404()
+        query_receive_user = db.session.query(User).filter_by(id = data["user_receive_invite"]).first_or_404()
+        serialize_send = query_send_user.serialize()
+        get_send_username = serialize_send["username"]
+        get_send_profile_img = serialize_send["profile_img_url"]
+        serialize_receive = query_receive_user.serialize()
+        get_receive_username = serialize_receive["username"]
+        get_receive_profile_img = serialize_receive["profile_img_url"]   
+        new_request = Friend_request(user_send_invite = data["user_send_invite"], user_receive_invite = data["user_receive_invite"], send_username = get_send_username, receive_username = get_receive_username, send_profile_image = get_send_profile_img, receive_profile_image = get_receive_profile_img)
+        db.session.add(new_request)
+        db.session.commit()
+        return jsonify({"msg":"invitacion fue enviado con exito"}),200
     except Exception as err:
         return jsonify({"error":"There was an unexpected error","msg":str(err)}),500
 
 
-@api.route('/friend_accept',methods=['POST'])
+@api.route('/friends_request/<int:id_user>',methods=['GET'])
+def get_friend_request(id_user):
+    try:
+        query_request = db.session.query(Friend_request).filter_by(user_receive_invite = id_user).all()
+        if not query_request:
+            return jsonify({"msg":"No existen peticiones de amistad"}),404 
+        else: 
+            serialize_request = [item.serialize() for item in query_request]
+            return jsonify(serialize_request),200
+    except Exception as err:
+        return jsonify({"error":"There was an unexpected error","msg":str(err)}),500
+
+@api.route('/friends_request_remove',methods=['DELETE'])
+def remove_friend_request():
+    req_send = request.args.get("id_send")
+    req_receive = request.args.get("id_receive")
+    try:
+        if req_send is None or req_receive is None:
+            return jsonify({"msg":"Los valores no pueden ser vacios"})
+        else:
+            query_req = db.session.query(Friend_request).filter_by(user_send_invite = req_send, user_receive_invite = req_receive).first()
+            if query_req:
+                db.session.delete(query_req)
+                db.session.commit()
+                return jsonify({"msg":"Peticion de amistdas eliminada con exito"}),200
+            else:
+                return jsonify({"msg":"No se encontro ninguna peticion de amistad"}),404
+
+    except Exception as err:
+        return jsonify({"error":"There was an unexpected error","msg":str(err)}),500
+
+
+
+@api.route('/friends_accept',methods=['POST'])
 def new_friend():
     required = {"user_id_first","user_id_second"} # FIRST = QUIEN QUIERE SER TU AMIGO , SECOND = TU ID
     data = request.get_json()
@@ -594,14 +634,67 @@ def new_friend():
         for item in required:
             if item not in data or not data[item]:
                 return jsonify({"msg":"Faltan datos o existen valores vacios"}),400
-            else:
-                new_friendship = Friendship(user_id_first = data["user_id_first"], user_id_second = data["user_id_second"])
-                db.session.add(new_friendship)
-                db.session.commit()
-                return jsonify({"msg":"La amistad se registro con exito"}),200
+                       
+        query_friendship = db.session.query(Friendship).filter_by(user_id_first = data["user_id_first"], user_id_second = data["user_id_second"]).first()
+        query_friendship_reverse = db.session.query(Friendship).filter_by(user_id_first = data["user_id_second"], user_id_second =  data["user_id_first"]).first()
+
+        if query_friendship:
+            return jsonify({"msg":"Usuarios ya son amigos"}),400
+        if query_friendship_reverse:
+            return jsonify({"msg":"Usuarios ya son amigos"}),400
+           
+        query_first_user = db.session.query(User).filter_by(id = data["user_id_first"]).first_or_404()
+        query_second_user = db.session.query(User).filter_by(id = data["user_id_second"]).first_or_404()
+        serialize_first = query_first_user.serialize()
+        get_first_username = serialize_first["username"]
+        get_first_profile_img = serialize_first["profile_img_url"]
+        serialize_second = query_second_user.serialize()
+        get_second_username = serialize_second["username"]
+        get_second_profile_img = serialize_second["profile_img_url"]
+        new_friendship = Friendship(user_id_first = data["user_id_first"], user_id_second = data["user_id_second"], first_username = get_first_username, second_username = get_second_username, first_profile_image = get_first_profile_img, second_profile_image = get_second_profile_img)
+        db.session.add(new_friendship)                
+        delete_request = db.session.query(Friend_request).filter_by(user_send_invite = data["user_id_first"],user_receive_invite = data["user_id_second"]).first()
+        db.session.delete(delete_request)
+        db.session.commit()
+        return jsonify({"msg":"La amistad se registro con exito"}),200
+    
+    except Exception as err:
+        return jsonify({"error":"There was an unexpected error","msg":str(err)}),500    
+    
+
+@api.route('/friends_remove', methods=['DELETE'])
+def remove_friend():
+    id_first = request.args.get("id_first")
+    id_second = request.args.get("id_second")
+    try:
+        if id_first is None or id_second is None:
+            return jsonify({"msg","Los valores no pueden ser vacios"}),400
+        
+        query_friendship = db.session.query(Friendship).filter_by(user_id_first = id_first, user_id_second = id_second).first()
+        query_friendship_reverse = db.session.query(Friendship).filter_by(user_id_first = id_second, user_id_second = id_first).first()
+
+        if query_friendship:
+            db.session.delete(query_friendship)
+        if query_friendship_reverse:
+            db.session.delete(query_friendship_reverse)
+        db.session.commit()        
+        return jsonify({"msg":"Se elimino el amigo con exito"}),200
     except Exception as err:
         return jsonify({"error":"There was an unexpected error","msg":str(err)}),500
-    
+
+@api.route('/friends/<int:id_user>',methods=['GET'])
+def get_user_friends(id_user):    
+    try:
+        query_request = db.session.query(Friendship).filter_by(user_id_second = id_user).all()
+        if not query_request:
+            return jsonify({"msg":"No existen amistades"}),404 
+        else: 
+            serialize_request = [item.serialize() for item in query_request]
+            return jsonify(serialize_request),200
+    except Exception as err:
+        return jsonify({"error":"There was an unexpected error","msg":str(err)}),500
+
+
     
 
 
