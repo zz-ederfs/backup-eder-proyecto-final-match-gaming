@@ -90,7 +90,10 @@ export const Navbar = () => {
                         </Link>
                       </li>
                       <li>
-                        <Link className="dropdown-item" to="/edit-profile">
+                        <Link
+                          className="dropdown-item"
+                          to={`/profile_edit/${store.userProfile.id}`}
+                        >
                           Editar perfil
                         </Link>
                       </li>
