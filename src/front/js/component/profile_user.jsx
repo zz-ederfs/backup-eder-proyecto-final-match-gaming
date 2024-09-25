@@ -1,5 +1,6 @@
 import React from "react";
-import PropTypes from "prop-types";
+import "../../styles/profile.css";
+import { Link } from "react-router-dom";
 
 export const UserProfileCard = ({
   profile_img_url,
@@ -30,8 +31,10 @@ export const UserProfileCard = ({
             </strong>
           </p>
         </div>
-        <div className="description mt-2 ms-5">
-          <span>{description}</span>
+        <div className="description mt-2 ms-5 text-justify">
+          <span style={{ display: "block", textAlign: "justify" }}>
+            {description}
+          </span>
         </div>
         <div className="social-links mt-4 ms-5">
           <p className="d-flex justify-content-start flex-wrap">
@@ -58,20 +61,10 @@ export const UserProfileCard = ({
         </div>
       </div>
       <div className="col-12 col-md-2 d-flex justify-content-center align-items-start py-3">
-        <button type="button" className="btn custom-button me-5">
+        <button type="button" className="btn custom-button-profile me-5">
           Connect
         </button>
       </div>
     </div>
   );
-};
-
-UserProfileCard.propTypes = {
-  profile_img_url: PropTypes.string.isRequired,
-  username: PropTypes.string.isRequired,
-  first_name: PropTypes.string.isRequired,
-  last_name: PropTypes.string.isRequired,
-  description: PropTypes.string.isRequired,
-  steam_id: PropTypes.string,
-  discord_id: PropTypes.string,
 };
