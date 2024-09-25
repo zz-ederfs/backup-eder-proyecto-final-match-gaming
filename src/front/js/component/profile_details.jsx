@@ -1,6 +1,7 @@
 import React, { useEffect, useContext, useState } from "react";
 import { UserProfileCard } from "./profile_user.jsx";
 import { Context } from "../store/appContext";
+import { SessionCardResult } from "./create_session/session_card_result.jsx";
 
 export const UserInformation = ({ userId }) => {
   const { store, actions } = useContext(Context);
@@ -25,9 +26,17 @@ export const UserInformation = ({ userId }) => {
         }
       }
     };
+    const fetchSessions = async () => {
+      try {
+        await actions.getSessions();
+      } catch (error) {
+        console.error("Error fetching sessions:", error);
+      }
+    };
 
     if (shouldFetch) {
       fetchUserProfile();
+      fetchSessions();
       setShouldFetch(false);
     }
 
@@ -39,7 +48,11 @@ export const UserInformation = ({ userId }) => {
   const userProfile = store.userProfile || {};
   const platforms = userProfile.platform || [];
   const favoriteGames = store.favoriteGames || [];
+  const sessions = store.sessions || [];
 
+  const userSessions = sessions.filter(
+    (session) => session.host_username === userProfile.username
+  );
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -74,7 +87,7 @@ export const UserInformation = ({ userId }) => {
             <h3>Platforms</h3>
           </div>
           <div className="col-12 d-flex justify-content-center">
-            <div className="row justify-content-center">
+            <div className="row justify-content-between">
               {platformIcons.length > 0 ? (
                 platformIcons.map((platform, index) => (
                   <div key={index} className="col-md-4 mb-3 mt-3">
@@ -142,6 +155,42 @@ export const UserInformation = ({ userId }) => {
                   No favorite games available.
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      </section>
+      <section id="profile_games">
+        <div className="row">
+          <div className="col-12 col-md-4 mt-5">
+            <div className="rounded custom-card-friends align-items-center text-center p-3">
+              <h3 className="text-center">Amigos</h3>
+              <div className="mt-5"></div>
+            </div>
+          </div>
+          <div className="col-12 col-md-8 mt-5">
+            <div className="rounded custom-card-friends p-3">
+              <h3 className="text-start">Sesiones</h3>
+              <div className="mt-5">
+                {userSessions.length > 0 ? (
+                  userSessions.map((session) => (
+                    <div key={session.id} className="col-12">
+                      <SessionCardResult
+                        id={session.id}
+                        name={session.game_name}
+                        imagen={session.background_img}
+                        username={session.host_username}
+                        time={session.formattedTime}
+                        date={session.formattedDate}
+                        capacity={session.capacity}
+                      />
+                    </div>
+                  ))
+                ) : (
+                  <div className="col-6 text-center">
+                    No sessions available.
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
