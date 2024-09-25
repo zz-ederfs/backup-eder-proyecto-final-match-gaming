@@ -1,10 +1,25 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import userDefault from "../../../img/genre_games/user_default.jpg"
+import { Context } from "../../store/appContext";
 
 export const Member = (props) => {
 
     const navigate = useNavigate()
+    const {actions, store} = useContext(Context)
+    const [friendRequest, setFriendRequest] = useState("")
+
+    const handleClick = async (id_user) => {
+        const userProfile = JSON.parse(localStorage.getItem("userProfile")).id
+        const data = {
+            user_send_invite: userProfile,
+            user_receive_invite: id_user 
+        }
+
+        const result =  await actions.sendFriendInvite(data)
+        console.log(result)
+        setFriendRequest(result)
+    }
 
     return (
         <div>
@@ -17,17 +32,17 @@ export const Member = (props) => {
                         <span className="fs-5">@{props.username}</span><span className="fs-7 text-white-50 ps-2">{props.first_name}</span>
                         <div className="py-2 d-flex">
                             <div className="p-0 rounded me-2" style={{backgroundColor: "#95763B"}}>
-                                <span className="text-uppercase fw-light px-2" style={{fontSize: "0.8rem"}}>{props.schedule ? props.schedule : "no schedule"}</span>
+                                <span className="text-uppercase fw-light px-2" style={{fontSize: "0.8rem"}}>{props.schedule ? props.schedule : "empty"}</span>
                             </div>
                             <div className="p-0  rounded me-2" style={{backgroundColor: "#0B5C97"}}>
-                                <span className="text-uppercase fw-light px-2" style={{fontSize: "0.8rem"}}>{props.region ? props.region : "no region"}</span>
+                                <span className="text-uppercase fw-light px-2" style={{fontSize: "0.8rem"}}>{props.region ? props.region : "empty"}</span>
                             </div>
                         </div>
                     </div>
                     <div className="col-12 col-lg-4" style={{justifyContent: "right"}}>
                         <div className="row justify-content-end">
                             <div className="col-6 col-lg-10 ps-2">
-                                <button className="" style={{backgroundColor: "#9B75F9", color: "white", border: "none", borderRadius: "20px",  fontSize: "16px", display: "block", width: "100%", marginBottom: "10px"}}>
+                                <button className="" style={{backgroundColor: "#9B75F9", color: "white", border: "none", borderRadius: "20px",  fontSize: "16px", display: "block", width: "100%", marginBottom: "10px"}} onClick={() => handleClick(props.id)} disabled={friendRequest === false}>
                                     Connect
                                 </button>
                             </div>

@@ -50,7 +50,7 @@ const Layout = () => {
             <Route element={<GenreSelection />} path="/genre-selection" />
             <Route element={<CreateSession/>} path="/create-session"/>
             <Route element={<Session/>} path="/session"/>
-            <Route element={<InfoSession/>} path="/info-session"/>
+            <Route element={<InfoSession/>} path="/info-session/:id_session"/>
             <Route element={<h1>Page Not Found</h1>} path="*" />
           </Routes>
           <Footer />

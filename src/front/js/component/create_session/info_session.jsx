@@ -1,9 +1,32 @@
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import logo from "../../../img/logo/logo-marca.png"
 import {Member} from "../../component/create_session/member.jsx"
+import { useParams } from "react-router-dom";
+import { Context } from "../../store/appContext.js";
+import userDefault from "../../../img/genre_games/user_default.jpg"
 
 
 export const InfoSession = () => {
+
+
+    const params = useParams()
+    const {store, actions} = useContext(Context)
+
+
+    useEffect(() => {   
+        actions.getSession(params.id_session)
+        actions.getSessionMembers(params.id_session)
+    }, [])
+
+    const handleClick =  () => {
+        const userProfile = JSON.parse(localStorage.getItem("userProfile")).id
+        const data = {
+            id_user: userProfile,
+            id_session: parseInt(params.id_session)
+        }
+        actions.joinSession(data)
+    }
+
     return(
         <div className="d-flex flex-column align-items-center min-vh-100 pb-3" style={{ backgroundColor: "#16171C", color: "#fff" }}>
             <img src={logo} alt="Logo" style={{ width: '40%', height: '80px', margin: '10px', objectFit: "contain" }} />
@@ -15,36 +38,50 @@ export const InfoSession = () => {
                             {/* Busqueda */}
                             <div className="container">
                             <div className="row">
-                            <div className="col-12 col-lg-5 d-flex flex-column justify-content-center align-items-center" style={{backgroundImage: `url("https://media.rawg.io/media/games/4be/4be6a6ad0364751a96229c56bf69be59.jpg")`, backgroundSize: "cover", backgroundPosition: "center", minHeight: "250px", boxShadow: "inset 0px 0px 180px rgba(0, 0, 0, 0.5)", marginBottom: "50px", borderRadius: "20px"}}>
-                                <div style={{width: "220px", height: "220px", borderRadius: "50%", overflow: "hidden", border: "2px solid white", marginTop: "60px",}}>
-                                    <img src="https://plus.unsplash.com/premium_photo-1669343628944-d0e2d053a5e8?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8aW5zdGFncmFtJTIwcHJvZmlsZXxlbnwwfHwwfHx8MA%3D%3D" alt="Perfil" style={{ width: "100%", height: "100%", objectFit: "cover", }}/>
+                            <div className="col-12 col-lg-5 d-flex flex-column justify-content-center align-items-center" style={{backgroundImage: `url(${store.specificSession.background_img})`, backgroundSize: "cover", backgroundPosition: "center", minHeight: "250px", boxShadow: "inset 0px 0px 180px rgba(0, 0, 0, 0.5)", marginBottom: "50px", borderRadius: "20px"}}>
+                                <div style={{width: "220px", height: "220px", borderRadius: "50%", overflow: "hidden", border: "2px solid purple", marginTop: "60px",}}>
+                                    <img src={store.specificSession.host_profile_img ? store.specificSession.host_profile_img : userDefault} alt="Perfil" style={{ width: "100%", height: "100%", objectFit: "cover", }}/>
                                 </div>
                                 <div className="mb-4" style={{width: "85%", padding: "1.7rem", backgroundColor: "rgba(0, 0, 0, 0.5)", borderRadius: "15px", marginTop: "100px"}}>
-                                <h4 className="">THE LAST OF US</h4>
-                                <h5 className="text-start mt-4">Nombre de host</h5>
-                                <h5 className="text-start">Duración</h5>
-                                <h5 className="text-start">Lenguage</h5>                        
-                                <h5 className="text-start">Region</h5>
+                                <h4 className="">{store.specificSession.game_name}</h4>
+                                <h5 className="text-start mt-4">{store.specificSession.host_username}</h5>
+                                <h5 className="text-start">{store.specificSession.duration}</h5>
+                                <h5 className="text-start">{store.specificSession.language}</h5>                        
+                                <h5 className="text-start">{store.specificSession.region}</h5>
                                 </div>                                                          
                             </div>
                                 <div className="col-12 col-lg-7 d-flex flex-column">
                                     <div className="bg-black p-2" style={{borderRadius: "15px"}}>
                                         <h5 className="text-start">Description:</h5>
-                                        <div className="bg-dark p-2" style={{borderRadius: "5px"}}>
+                                        <div className="bg-dark p-2" style={{borderRadius: "5px", minHeight: "80px"}}>
                                             <p className="text-start">
-                                                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Nobis incidunt officiis velit natus magni, provident blanditiis beatae vitae, nulla asperiores libero aperiam, accusamus iste quidem porro explicabo. Perferendis, quis sunt.
+                                                {store.specificSession.description}
                                             </p>
                                         </div>
                                     </div>
                                     <div className="bg-black p-2 mt-2" style={{borderRadius: "15px"}}>
-                                        <h5 className="text-start">Members:</h5>
-                                        <div className="p-1" style={{borderRadius: "5px", overflow: "scroll", height: "370px"}}>
-                                            <Member username={"Anjhelo"}/>
-                                            <Member username={"Anjhelo"}/>
-                                            <Member username={"Anjhelo"}/>
-                                            <Member username={"Anjhelo"}/>
-                                            <Member username={"Anjhelo"}/>
+                                        <div className="d-flex justify-content-between pt-1">
+                                            <h5 className="">Members:</h5>
+                                            <h6 className="me-2">{store.totalMembers}/{store.specificSession.capacity}</h6>
                                         </div>
+                                        <div className="p-1" style={{borderRadius: "5px", overflow: "scroll", height: "415px"}}>
+                                            {store.sessionMembers && store.sessionMembers.length > 0 ? (
+                                                store.sessionMembers.map(member => 
+                                                    <Member key={member.id} username={member.username} imagen={member.profile_img_url} schedule={member.schedule} region={member.region} id={member.id}/>
+                                                )
+                                            ) : (
+                                                <p>No hay miembros en esta sesión.</p>
+                                            )}
+                                        </div>
+                                        {store.totalMembers === store.specificSession.capacity ? (
+                                            <button className="btn-searchA mt-1"disabled>
+                                                Full
+                                            </button>
+                                        ) : (
+                                            <button className="btn-searchA mt-1" onClick={handleClick}>
+                                                Unirse
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
                                 </div>

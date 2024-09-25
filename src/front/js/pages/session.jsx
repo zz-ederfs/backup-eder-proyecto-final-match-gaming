@@ -11,6 +11,7 @@ export const Session = () => {
     const [sessionID, setSessionID] = useState("");
 
     useEffect(() => {
+        store.specificSession = []
         actions.getSessions();
     }, []);
 
@@ -59,7 +60,7 @@ export const Session = () => {
             resetSearch();
         }
     };
-
+    
     const sortedSessions = sortSessions();
 
     return (
@@ -101,6 +102,7 @@ export const Session = () => {
                                 {store.specificSession.length !== 0 ? (
                                     <SessionCardResult
                                         name={store.specificSession.game_name}
+                                        id={store.specificSession.id}
                                         imagen={store.specificSession.background_img}
                                         username={store.specificSession.host_username}
                                         time={store.specificSession.formattedTime}
@@ -111,6 +113,7 @@ export const Session = () => {
                                     sortedSessions.map(session => (
                                         <SessionCardResult
                                             key={session.id}  
+                                            id={session.id}
                                             name={session.game_name}
                                             imagen={session.background_img}
                                             username={session.host_username}

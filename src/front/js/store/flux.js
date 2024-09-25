@@ -22,7 +22,9 @@ const getState = ({ getStore, getActions, setStore }) => {
 			specificGame: [],
 			usersByGame: [],
 			sessions: [],
-			specificSession: []
+			specificSession: [],
+			sessionMembers: [],
+			totalMembers: 0
 		},
 		actions: {
 
@@ -126,20 +128,85 @@ const getState = ({ getStore, getActions, setStore }) => {
 				//reset the global store
 				setStore({ demo: demo });
 			},
+			updateUserProfile: async (userId, profileData) => {
+				try {
+				  const backendUrl = process.env.BACKEND_URL;
+				  if (!backendUrl) throw new Error("BACKEND_URL no está definido");
+				  // Asegúrate de que 'platform' sea una lista de cadenas
+				  profileData.platform = Array.isArray(profileData.platform)
+					? profileData.platform
+					: profileData.platform
+						.split(",")
+						.map((platform) => platform.trim());
+				  // Validar que 'platform' contenga solo valores válidos
+				  const validPlatforms = [
+					"steam",
+					"play station",
+					"xbox",
+					"nintendo switch",
+				  ];
+				  if (
+					!profileData.platform.every((platform) =>
+					  validPlatforms.includes(platform)
+					)
+				  ) {
+					throw new Error(
+					  `Plataformas no válidas: ${profileData.platform.join(", ")}`
+					);
+				  }
+				  // Asegúrate de que 'favoriteGames' sea una lista de objetos con id y name
+				  if (!Array.isArray(profileData.favoriteGames)) {
+					throw new Error("favoriteGames debe ser una lista de objetos");
+				  }
+				  if (
+					!profileData.favoriteGames.every(
+					  (game) => typeof game === "object" && game.id && game.name
+					)
+				  ) {
+					throw new Error(
+					  "Cada objeto en favoriteGames debe tener 'id' y 'name'"
+					);
+				  }
+				  const response = await fetch(
+					`${backendUrl}/api/profile_edit/${userId}`,
+					{
+					  method: "PUT",
+					  headers: { "Content-Type": "application/json" },
+					  body: JSON.stringify(profileData),
+					}
+				  );
+				  if (!response.ok)
+					throw new Error(
+					  `Error al actualizar el perfil: ${await response.text()}`
+					);
+				  const updatedProfile = await response.json();
+				  setStore({ userProfile: updatedProfile });
+				  return updatedProfile;
+				} catch (error) {
+				  console.error("Error al actualizar el perfil:", error);
+				  throw error;
+				}
+			  },
 			getUserProfile: async (userId) => {
 				try {
-				  const resp = await fetch(
-					`${process.env.BACKEND_URL}/api/profile/${userId}`
-				  );
-				  if (!resp.ok) {
-					const errorText = await resp.text();
-					console.error("Error loading user profile:", errorText);
-					throw new Error(`HTTP error! status: ${resp.status}`);
-				  }
-				  const data = await resp.json();
-				  setStore({ userProfile: data });
+				  const backendUrl = process.env.BACKEND_URL;
+				  if (!backendUrl) throw new Error("BACKEND_URL is not defined");
+				  const fetchJson = async (url) => {
+					const response = await fetch(url);
+					if (!response.ok)
+					  throw new Error(`HTTP error! status: ${response.status}`);
+					return response.json();
+				  };
+				  const [userProfile, favoriteGamesData] = await Promise.all([
+					fetchJson(`${backendUrl}/api/profile/${userId}`),
+					fetchJson(`${backendUrl}/api/favorites/${userId}`),
+				  ]);
+				  setStore({
+					userProfile,
+					favoriteGames: favoriteGamesData.user_games,
+				  });
 				} catch (error) {
-				  console.error("Error loading message from backend", error);
+				  console.error("Error loading data from backend", error);
 				}
 			  },
 			  
@@ -194,7 +261,6 @@ const getState = ({ getStore, getActions, setStore }) => {
                     if (response.ok) {
                         const data = await response.json();
                         setStore({ recommendedGames: data });
-						console.log("hola")
                     } else {
                         console.error("Error:", response.statusText);
                     }
@@ -383,8 +449,76 @@ const getState = ({ getStore, getActions, setStore }) => {
 				} catch (error) {
 					console.log("Error loading message from backend: ", error);
 				}
-			}
+			},
+			getSessionMembers: async (id_session) => {
+				try {
+					const response = await fetch(`${process.env.BACKEND_URL}/api/sessions_members/${id_session}`, {
+						method: "GET",
+						headers: {
+							'Content-Type': 'application/json',
+						},
+					});
 			
+					if (response) {
+						const data = await response.json();
+						setStore({sessionMembers: data.members, totalMembers: data.total_members});
+					} else {
+						console.error("Error: ", response.statusText);
+					}
+				} catch (error) {
+					console.log("Error loading members from backend: ", error);
+				}
+			},
+			joinSession: async (data) => {
+				try{
+					const response = await fetch(`${process.env.BACKEND_URL}/api/sessions_join`, {
+						method: "POST",
+						body: JSON.stringify(data),
+						headers: {
+							"Content-Type": "application/json"
+						}
+					});
+					let responseData = await response.json();
+
+					if(response.status === 200)
+					{
+						console.log("Union a la sesión exitosa")
+					}else {
+						console.error("Error al unirse a la sesión: ", responseData)
+					}
+				}
+				catch(error)
+				{
+					console.error("Error en la solicitud", error)
+				}
+			},
+			sendFriendInvite: async (data) => {
+				try{
+					const response = await fetch(`${process.env.BACKEND_URL}/api/friend_request`, {
+						method: "POST",
+						body: JSON.stringify(data),
+						headers: {
+							"Content-Type": "application/json"
+						}
+					});
+					let responseData = await response.json();
+
+					if(response.ok)
+					{
+						console.log("Solicitud Exitosa")
+						return true;
+					}
+					else
+					{
+						console.log("error en la solicitud", responseData)
+						return false;
+					}
+				}
+				catch(error){
+					console.error("Error en la solicitud: ", error)
+					return false
+				}
+			}
 		}
 	};
 };
