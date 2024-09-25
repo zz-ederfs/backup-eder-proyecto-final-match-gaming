@@ -55,19 +55,76 @@ export const Navbar = () => {
                   </Link>
                 </li>
                 <li className="nav-item dropdown">
-                  <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <a
+                    className="nav-link dropdown-toggle"
+                    href="#"
+                    id="navbarDropdown"
+                    role="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
                     Sessions
                   </a>
-                  <ul className="dropdown-menu bg-dark" aria-labelledby="navbarDropdown">
+                  <ul
+                    className="dropdown-menu bg-dark"
+                    aria-labelledby="navbarDropdown"
+                  >
                     <li className="">
-                      <Link className="dropdown-item text-white" to="/session">Search Session</Link>
+                      <Link className="dropdown-item text-white" to="/session">
+                        Search Session
+                      </Link>
                     </li>
                     <li>
-                      <Link className="dropdown-item text-white" to="/create-session">Create Session</Link>
+                      <Link
+                        className="dropdown-item text-white"
+                        to="/create-session"
+                      >
+                        Create Session
+                      </Link>
                     </li>
                   </ul>
                 </li>
               </ul>
+
+              {store.isAuthenticated && (
+                <div className="dropdown me-2">
+                  <button
+                    className="btn nav_button dropdown-toggle"
+                    type="button"
+                    id="dropdownMenuButton"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    <i className="fa-solid fa-bell"> 4</i>
+                  </button>
+                  <ul
+                    className="dropdown-menu"
+                    aria-labelledby="dropdownMenuButton"
+                  >
+                    <li>
+                      <a className="dropdown-item" href="#">
+                        Notificación 1: Mensaje importante
+                      </a>
+                    </li>
+                    <li>
+                      <a className="dropdown-item" href="#">
+                        Notificación 2: Recordatorio de cita
+                      </a>
+                    </li>
+                    <li>
+                      <a className="dropdown-item" href="#">
+                        Notificación 3: Actualización de sistema
+                      </a>
+                    </li>
+                    <li>
+                      <a className="dropdown-item" href="#">
+                        Notificación 4: Nueva actividad
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              )}
+
               <div className="d-flex align-items-center navbar-container">
                 {store.isAuthenticated ? (
                   <div className="dropdown">
