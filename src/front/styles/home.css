@@ -39,6 +39,7 @@ h2 {
   font-size: 16px;
   border-radius: 10px;
   color: white;
+  margin: 3px;
 }
 
 .dropdown-menu {
@@ -183,7 +184,7 @@ h2 {
 }
 
 .border-card-match-gamers {
-  border-color: #8c67f6 !important;
+  border-color: rgb(112, 11, 151) !important;
 }
 
 .custom-card-games-recomended {

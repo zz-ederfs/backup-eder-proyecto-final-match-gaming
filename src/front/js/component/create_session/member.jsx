@@ -7,7 +7,7 @@ export const Member = (props) => {
 
     const navigate = useNavigate()
     const {actions, store} = useContext(Context)
-    const [friendRequest, setFriendRequest] = useState("")
+    const [friendRequest, setFriendRequest] = useState(true)
 
     const handleClick = async (id_user) => {
         const userProfile = JSON.parse(localStorage.getItem("userProfile")).id
@@ -43,7 +43,7 @@ export const Member = (props) => {
                         <div className="row justify-content-end">
                             <div className="col-6 col-lg-10 ps-2">
                                 <button className="" style={{backgroundColor: "#9B75F9", color: "white", border: "none", borderRadius: "20px",  fontSize: "16px", display: "block", width: "100%", marginBottom: "10px"}} onClick={() => handleClick(props.id)} disabled={friendRequest === false}>
-                                    Connect
+                                {friendRequest === true ? "Connect" : "Sended"}
                                 </button>
                             </div>
                             <div className="col-6 col-lg-10 ps-2">

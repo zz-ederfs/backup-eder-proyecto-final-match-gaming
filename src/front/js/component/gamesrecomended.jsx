@@ -1,22 +1,30 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect, useContext, useState } from "react";
 import { CardComponentGames } from "../component/cardGamesRecomended.jsx";
 import { Context } from "../store/appContext";
 
 export const Gamesrecomended = () => {
   const { store, actions } = useContext(Context);
+  const [visibleGames, setVisibleGames] = useState(3); 
 
   useEffect(() => {
-    actions.getGamesRecomended(3);
-  }, []);
+    actions.getGamesRecomended(15);
+  }, []); 
+
+  const handleViewMore = () => {
+    setVisibleGames((prev) => prev + 3); 
+  };
+
+
+  const gamesAvailable = store.games && Array.isArray(store.games) ? store.games : [];
 
   return (
     <section className="py-5 bg-black">
       <div className="container rounded shadow">
         <div className="custom-bg-gamers">
-          <h1 className="custom-title-2"> Games Recomended </h1>
+          <h1 className="custom-title-2"> Games Recommended </h1>
           <div className="row mt-5">
-            {store.games && store.games.length > 0 ? (
-              store.games.map((game, index) => (
+            {gamesAvailable.length > 0 ? (
+              gamesAvailable.slice(0, visibleGames).map((game, index) => ( 
                 <div
                   key={index}
                   className="col-12 col-md-4 mb-4 custom-card-games-recomended"
@@ -33,11 +41,13 @@ export const Gamesrecomended = () => {
               <p>No games available</p>
             )}
           </div>
-          <div className="col-12 text-center d-flex justify-content-center mt-5 mb-4">
-            <button type="submit" className="btn custom-button">
-              View more
-            </button>
-          </div>
+          {visibleGames < gamesAvailable.length && ( 
+            <div className="col-12 text-center d-flex justify-content-center mt-5 mb-4">
+              <button type="button" className="btn custom-button" onClick={handleViewMore}>
+                View more
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </section>

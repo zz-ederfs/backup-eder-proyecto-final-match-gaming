@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Game, Favorite_game, Friend_request, Friendship, Subscription, Session, Session_member
+from api.models import db, User, Game, Favorite_game, Friend_request, Friendship, Subscription, Session, Session_member, Platform
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from sqlalchemy.sql import func
@@ -438,7 +438,7 @@ def post_new_session():
 @api.route('/sessions/<int:id_session>', methods=['GET'])
 def get_specific_session(id_session):
     try:
-        
+        # Obtener la sesión específica con los datos relacionados
         query_session = db.session.query(Session, Game.name, User.username)\
             .join(Game, Session.game_id == Game.id)\
             .join(User, Session.host_id == User.id)\
@@ -451,6 +451,15 @@ def get_specific_session(id_session):
         session_data = session.serialize()  
         session_data['game_name'] = game_name  
         session_data['host_username'] = host_username 
+
+        total_members_query = db.session.query(Session_member).filter_by(session_id=id_session).count()
+        session_data['total_members'] = total_members_query
+        
+       
+        if total_members_query >= session.capacity:
+            session_data['is_full'] = True
+        else:
+            session_data['is_full'] = False
 
         return jsonify(session_data), 200
         
@@ -489,15 +498,21 @@ def get_all_sessions():
             .join(User, Session.host_id == User.id)\
             .all()
 
-        
         session_list = []
         for session, game_name, host_username in sessions:
             session_data = session.serialize()  
             session_data['game_name'] = game_name  
             session_data['host_username'] = host_username 
+
+
+            total_members_query = db.session.query(Session_member).filter_by(session_id=session.id).count()
+            session_data['total_members'] = total_members_query
+            
+
+            session_data['is_full'] = total_members_query >= session.capacity
+
             session_list.append(session_data)
 
-        
         return jsonify(session_list), 200
     except Exception as e:
         return jsonify({"message": str(e)}), 500
