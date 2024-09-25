@@ -25,7 +25,6 @@ export const CreateSession = () => {
     }, [formData, gameSearch]);
 
     const isFormComplete = () => {
-        console.log(formData)
         return (
             formData.start_date !== "" &&
             formData.duration !== "" &&
@@ -39,7 +38,6 @@ export const CreateSession = () => {
     }
     const handleSearch = (e) => {
         const value = e.target.value.toLowerCase();  
-        console.log(value)
         if (value.length > 0) { 
             const filtered = store.recommendedGames.filter((game) => 
                 game.name.toLowerCase().includes(value)  
@@ -67,17 +65,13 @@ export const CreateSession = () => {
         setFormData({ ...formData, [name]: value });
     
         if (name === "start_date") {
-            console.log("Valor recibido:", value);
-    
-           
+         
             const localDate = parseISO(value);
-            console.log("Fecha local:", localDate);
     
             const offset = localDate.getTimezoneOffset(); 
             const utcDate = new Date(localDate.getTime() + offset * 60000); 
     
-            console.log("Fecha en UTC:", format(utcDate, "yyyy-MM-dd'T'HH:mm:ss'Z'"));
-            setFormData((prev) => ({ ...prev, [name]: format(utcDate, "yyyy-MM-dd'T'HH:mm:ss'Z'") }));
+            setFormData((prev) => ({ ...prev, [name]: format(utcDate, "yyyy-MM-dd'T'HH:mm:ss") }));
         }
     };
     
@@ -86,15 +80,14 @@ export const CreateSession = () => {
         e.preventDefault()
         const data = {
             ...formData,
-            game_id: store.searchedGames[0]?.id,
-            background_image: store.searchedGames[0]?.background_image
+            id_game: store.searchedGames[0]?.id,
+            id_host: JSON.parse(localStorage.getItem("userProfile")).id,
+            background_img: store.searchedGames[0]?.background_image
         }
-
-        console.log("Data para enviar: ", data)
-
-
-
+        actions.createSession(data)
     }
+
+
     return(
         <div className="d-flex flex-column align-items-center min-vh-100 pb-3" style={{backgroundColor: "#16171C", color: "#fff"}}>
         <img src={logo} alt="Logo" style={{width: '40%', height: '80px', margin: '10px', objectFit: "contain"}} />
@@ -136,7 +129,7 @@ export const CreateSession = () => {
                     </div>
                     <div className="col-md-6 py-1">
                         <label className="form-label mb-1">Duration</label>
-                        <select name="duration" class="form-select" onChange={getFormData} aria-label="Default select example" style={{backgroundColor: "#222328", border: "1px solid #797979", color:"white", borderRadius: "10px"}}>
+                        <select name="duration" className="form-select" onChange={getFormData} aria-label="Default select example" style={{backgroundColor: "#222328", border: "1px solid #797979", color:"white", borderRadius: "10px"}}>
                             <option selected>Select duration</option>
                             <option value="UNK">Unknown</option>
                             <option value="ONE">One Hour</option>
@@ -146,7 +139,7 @@ export const CreateSession = () => {
                     </div>
                     <div className="col-md-6 py-1">
                         <label className="form-label mb-1">Language</label>
-                        <select name="language" class="form-select" onChange={getFormData} aria-label="Default select example" style={{backgroundColor: "#222328", border: "1px solid #797979", color:"white", borderRadius: "10px"}}>
+                        <select name="language" className="form-select" onChange={getFormData} aria-label="Default select example" style={{backgroundColor: "#222328", border: "1px solid #797979", color:"white", borderRadius: "10px"}}>
                             <option selected>Select language</option>
                             <option value="ENGLISH">English</option>
                             <option value="SPANISH">Spanish</option>
@@ -155,7 +148,7 @@ export const CreateSession = () => {
                     </div>
                     <div className="col-md-6 py-1">
                         <label className="form-label mb-1">Session Type</label>
-                        <select name="session_type" class="form-select" onChange={getFormData} aria-label="Default select example" style={{backgroundColor: "#222328", border: "1px solid #797979", color:"white", borderRadius: "10px"}}>
+                        <select name="session_type" className="form-select" onChange={getFormData} aria-label="Default select example" style={{backgroundColor: "#222328", border: "1px solid #797979", color:"white", borderRadius: "10px"}}>
                             <option selected>Select type</option>
                             <option value="PUBLIC">Public</option>
                             <option value="PRIVATE">Private</option>
@@ -163,7 +156,7 @@ export const CreateSession = () => {
                     </div>
                     <div className="col-md-8 py-1">
                         <label className="form-label mb-1">Region</label>
-                        <select name="region" class="form-select" onChange={getFormData} aria-label="Default select example" style={{backgroundColor: "#222328", border: "1px solid #797979", color:"white", borderRadius: "10px"}}>
+                        <select name="region" className="form-select" onChange={getFormData} aria-label="Default select example" style={{backgroundColor: "#222328", border: "1px solid #797979", color:"white", borderRadius: "10px"}}>
                             <option selected>Select region</option>
                             <option value="NA">North America</option>
                             <option value="SA">South America</option>
@@ -171,18 +164,18 @@ export const CreateSession = () => {
                     </div>
                     <div className="col-md-4 py-1">
                         <label className="form-label mb-1">Capacity</label>
-                        <input name="capacity" type="number" onChange={getFormData} className="form-control" min="1" max="5" onInput={(e) => {if (e.target.value > 30) {e.target.value = 5}}} style={{backgroundColor: "#222328", border: "1px solid #797979", color:"white", borderRadius: "10px"}}/>
+                        <input name="capacity" type="number" onChange={getFormData} className="form-control" min="1" max="5" onInput={(e) => {if (e.target.value > 30) {e.target.value = 30}}} style={{backgroundColor: "#222328", border: "1px solid #797979", color:"white", borderRadius: "10px"}}/>
                     </div>
                     <div className="col-md-12 py-1">
                         <label className="form-label mb-1">Description</label>
-                        <textarea class="form-control" name="description" onChange={getFormData} rows="4" style={{backgroundColor: "#222328", border: "1px solid #797979", color:"white", borderRadius: "10px"}}></textarea>
+                        <textarea className="form-control" name="description" onChange={getFormData} rows="4" style={{backgroundColor: "#222328", border: "1px solid #797979", color:"white", borderRadius: "10px"}}></textarea>
                     </div>
 
                 {/* boton */}
                 </div>
                     <div className="text-center py-3 my-4">
                         <div className="d-flex justify-content-center gap-2 flex-wrap">
-                            <Link to="/age-verification">
+                            <Link to="/">
                                 <button className="btn btn-prev"><i className="fa-solid fa-arrow-left me-2"></i>Back</button>
                             </Link>
                             {formComplete ? (
