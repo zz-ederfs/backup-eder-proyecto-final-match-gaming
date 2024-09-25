@@ -7,7 +7,7 @@ export const MatchPeople = (props) => {
 
     const navigate = useNavigate()
     const {actions, store} = useContext(Context)
-    const [friendRequest, setFriendRequest] = useState("")
+    const [friendRequest, setFriendRequest] = useState(true)
 
     const handleClick = async (id_user) => {
         const userProfile = JSON.parse(localStorage.getItem("userProfile")).id
@@ -17,7 +17,6 @@ export const MatchPeople = (props) => {
         }
 
         const result =  await actions.sendFriendInvite(data)
-        console.log(result)
         setFriendRequest(result)
     }
 
@@ -42,7 +41,7 @@ export const MatchPeople = (props) => {
                     </div>
                     <div className="col-4 col-lg-4 d-grid" style={{justifyContent: "right"}}>
                         <button className="px-3" style={{backgroundColor: "#9B75F9", color: "white", border: "none", borderRadius: "20px",  fontSize: "16px", display: "block", width: "100%", marginBottom: "10px"}} onClick={() => handleClick(props.id)} disabled={friendRequest === false}>
-                            Connect
+                            {(friendRequest ? "Connect" : "Sended")}
                         </button>
                         <button style={{backgroundColor: "white", color: "#9B75F9", borderRadius: "20px", fontSize: "16px", display: "block", width: "100%"}} onClick={() => navigate(`/profile/${props.id}`)}>
                             Profile

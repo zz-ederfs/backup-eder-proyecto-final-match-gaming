@@ -137,7 +137,7 @@ export const Navbar = () => {
                     >
                       <i className="fas fa-user me-3"></i>
                       {store.userProfile
-                        ? store.userProfile.username
+                        ? JSON.parse(localStorage.getItem("userProfile")).username
                         : "Perfil"}
                     </button>
                     <ul

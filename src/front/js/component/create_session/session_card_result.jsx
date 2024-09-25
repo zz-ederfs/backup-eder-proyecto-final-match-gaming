@@ -4,7 +4,6 @@ import { Link, Navigate, useNavigate } from "react-router-dom";
 
 export const SessionCardResult = (props) => {
 
-
     const navigate = useNavigate()
 
     return (
@@ -23,7 +22,7 @@ export const SessionCardResult = (props) => {
                     <span className="fs-5 " style={{color: "#A2A2A2"}}>{props.capacity}<i className="fa-solid fa-user ms-2"></i></span>
                 </div>
                 <div style={{alignSelf: "end"}}>
-                    <button className="btn-searchA mb-4" data-target="#exampleModal" data-toggle="modal" style={{backgroundColor: "#8C67F6"}} onClick={() => navigate(`/info-session/${props.id}`)}>Info</button>
+                    <button className="btn-searchA mb-4" data-target="#exampleModal" disabled={props.isFull} data-toggle="modal" style={{backgroundColor: "#8C67F6"}} onClick={() => navigate(`/info-session/${props.id}`)}>{props.isFull ? "FULL" : "Info"}</button>
                 </div>
             </div>
         </div>

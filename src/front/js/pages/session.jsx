@@ -108,6 +108,7 @@ export const Session = () => {
                                         time={store.specificSession.formattedTime}
                                         date={store.specificSession.formattedDate}
                                         capacity={store.specificSession.capacity}
+                                        isFull={store.specificSession.is_full}
                                     />
                                 ) : (
                                     sortedSessions.map(session => (
@@ -120,6 +121,7 @@ export const Session = () => {
                                             time={session.formattedTime}
                                             date={session.formattedDate}
                                             capacity={session.capacity}
+                                            isFull={session.is_full}
                                         />
                                     ))
                                 )}

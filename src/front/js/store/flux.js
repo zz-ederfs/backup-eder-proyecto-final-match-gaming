@@ -27,7 +27,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			totalMembers: 0
 		},
 		actions: {
-
+		
 			loginUser: async (username, password) => {
 				try {
 				  const response = await fetch(`${process.env.BACKEND_URL}/api/login`, {
@@ -262,7 +262,6 @@ const getState = ({ getStore, getActions, setStore }) => {
                     if (response.ok) {
                         const data = await response.json();
                         setStore({ recommendedGames: data });
-						console.log(data)
                     } else {
                         console.error("Error:", response.statusText);
                     }
@@ -496,7 +495,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			},
 			sendFriendInvite: async (data) => {
 				try{
-					const response = await fetch(`${process.env.BACKEND_URL}/api/friend_request`, {
+					const response = await fetch(`${process.env.BACKEND_URL}/api/friends_request`, {
 						method: "POST",
 						body: JSON.stringify(data),
 						headers: {
