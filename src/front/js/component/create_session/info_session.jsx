@@ -8,7 +8,6 @@ import userDefault from "../../../img/genre_games/user_default.jpg"
 
 export const InfoSession = () => {
 
-
     const params = useParams()
     const {store, actions} = useContext(Context)
 

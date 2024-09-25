@@ -1,10 +1,26 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import userDefault from "../../../img/genre_games/user_default.jpg"
+import { Context } from "../../store/appContext";
 
 export const MatchPeople = (props) => {
 
     const navigate = useNavigate()
+    const {actions, store} = useContext(Context)
+    const [friendRequest, setFriendRequest] = useState("")
+
+    const handleClick = async (id_user) => {
+        const userProfile = JSON.parse(localStorage.getItem("userProfile")).id
+        const data = {
+            user_send_invite: userProfile,
+            user_receive_invite: id_user 
+        }
+
+        const result =  await actions.sendFriendInvite(data)
+        console.log(result)
+        setFriendRequest(result)
+    }
+
 
     return (
         <div>
@@ -25,7 +41,7 @@ export const MatchPeople = (props) => {
                         </div>
                     </div>
                     <div className="col-4 col-lg-4 d-grid" style={{justifyContent: "right"}}>
-                        <button className="px-3" style={{backgroundColor: "#9B75F9", color: "white", border: "none", borderRadius: "20px",  fontSize: "16px", display: "block", width: "100%", marginBottom: "10px"}}>
+                        <button className="px-3" style={{backgroundColor: "#9B75F9", color: "white", border: "none", borderRadius: "20px",  fontSize: "16px", display: "block", width: "100%", marginBottom: "10px"}} onClick={() => handleClick(props.id)} disabled={friendRequest === false}>
                             Connect
                         </button>
                         <button style={{backgroundColor: "white", color: "#9B75F9", borderRadius: "20px", fontSize: "16px", display: "block", width: "100%"}} onClick={() => navigate(`/profile/${props.id}`)}>

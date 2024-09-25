@@ -262,6 +262,7 @@ const getState = ({ getStore, getActions, setStore }) => {
                     if (response.ok) {
                         const data = await response.json();
                         setStore({ recommendedGames: data });
+						console.log(data)
                     } else {
                         console.error("Error:", response.statusText);
                     }
