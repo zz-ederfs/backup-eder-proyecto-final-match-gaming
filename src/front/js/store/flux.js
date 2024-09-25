@@ -85,16 +85,17 @@ const getState = ({ getStore, getActions, setStore }) => {
 				  };
 				}
 			  },
+
+			  logoutUser: () => {
+				localStorage.removeItem("token");
+				localStorage.removeItem("userProfile")
+				setStore({ token: null, isAuthenticated: false, userProfile: null });
+			  },
 			  
 			// Verificar si el usuario sigue autenticado
 			isAuthenticated: () => {
 				const store = getStore();
 				return store.token !== null; // Aquí podrías incluir una verificación adicional si el token es válido
-			},
-			// Función para cerrar sesión
-			logout: () => {
-				localStorage.removeItem("token");
-				setStore({ token: null, authMessage: null });
 			},
 
 			// Use getActions to call a function within a fuction

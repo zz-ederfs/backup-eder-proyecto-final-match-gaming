@@ -20,6 +20,7 @@ import { GenreSelection } from "./pages/genre_selection.jsx";
 import { CreateSession } from "./pages/create-session.jsx";
 import { Session } from "./pages/session.jsx";
 import { InfoSession } from "./component/create_session/info_session.jsx";
+import { UserProfileEdit } from "./pages/profile_edit.jsx";
 
 
 //create your first component
@@ -41,6 +42,7 @@ const Layout = () => {
             <Route element={<Login />} path="/login" />
             <Route element={<AgeVerification />} path="/age-verification" />
             <Route element={<Profile />} path="/profile/:userId" />
+            <Route element={<UserProfileEdit />} path="/profile_edit/:userId" />
             <Route element={<Search />} path="/search" />
             <Route element={<SearchMatch />} path="/search-match" />
             <Route element={<MatchResults />} path="/match-results/:id_game" />
