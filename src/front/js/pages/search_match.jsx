@@ -13,6 +13,9 @@ export const SearchMatch = () => {
 
     useEffect(() => {
         store.usersByGame = []
+        store.specificGame = []
+        store.searchedGames = []
+        setGameName("")
     },[])
 
     const getData = async (e) => {

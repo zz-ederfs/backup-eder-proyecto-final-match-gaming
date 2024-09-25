@@ -54,10 +54,18 @@ export const Navbar = () => {
                     Match
                   </Link>
                 </li>
-                <li className="nav-item">
-                  <Link className="nav-link" to="/session">
-                    Session
-                  </Link>
+                <li className="nav-item dropdown">
+                  <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Sessions
+                  </a>
+                  <ul className="dropdown-menu bg-dark" aria-labelledby="navbarDropdown">
+                    <li className="">
+                      <Link className="dropdown-item text-white" to="/session">Search Session</Link>
+                    </li>
+                    <li>
+                      <Link className="dropdown-item text-white" to="/create-session">Create Session</Link>
+                    </li>
+                  </ul>
                 </li>
               </ul>
               <div className="d-flex align-items-center navbar-container">
@@ -90,7 +98,10 @@ export const Navbar = () => {
                         </Link>
                       </li>
                       <li>
-                        <Link className="dropdown-item" to="/edit-profile">
+                        <Link
+                          className="dropdown-item"
+                          to={`/profile_edit/${store.userProfile.id}`}
+                        >
                           Editar perfil
                         </Link>
                       </li>

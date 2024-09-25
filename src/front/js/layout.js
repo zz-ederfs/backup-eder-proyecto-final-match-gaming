@@ -19,6 +19,9 @@ import { RegistrationForm } from "./pages/registration_form.jsx";
 import { GenreSelection } from "./pages/genre_selection.jsx";
 import { CreateSession } from "./pages/create-session.jsx";
 import { Session } from "./pages/session.jsx";
+import { InfoSession } from "./component/create_session/info_session.jsx";
+import { UserProfileEdit } from "./pages/profile_edit.jsx";
+
 
 //create your first component
 const Layout = () => {
@@ -39,6 +42,7 @@ const Layout = () => {
             <Route element={<Login />} path="/login" />
             <Route element={<AgeVerification />} path="/age-verification" />
             <Route element={<Profile />} path="/profile/:userId" />
+            <Route element={<UserProfileEdit />} path="/profile_edit/:userId" />
             <Route element={<Search />} path="/search" />
             <Route element={<SearchMatch />} path="/search-match" />
             <Route element={<MatchResults />} path="/match-results/:id_game" />
@@ -48,6 +52,7 @@ const Layout = () => {
             <Route element={<GenreSelection />} path="/genre-selection" />
             <Route element={<CreateSession/>} path="/create-session"/>
             <Route element={<Session/>} path="/session"/>
+            <Route element={<InfoSession/>} path="/info-session/:id_session"/>
             <Route element={<h1>Page Not Found</h1>} path="*" />
           </Routes>
           <Footer />
