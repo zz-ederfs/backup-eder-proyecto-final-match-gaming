@@ -7,7 +7,7 @@ export const Member = (props) => {
 
     const navigate = useNavigate()
     const {actions, store} = useContext(Context)
-    const [friendRequest, setFriendRequest] = useState(true)
+    const [friendRequest, setFriendRequest] = useState(false)
 
     const handleClick = async (id_user) => {
         const userProfile = JSON.parse(localStorage.getItem("userProfile")).id
@@ -16,9 +16,9 @@ export const Member = (props) => {
             user_receive_invite: id_user 
         }
 
-        const result =  await actions.sendFriendInvite(data)
-        console.log(result)
-        setFriendRequest(result)
+        actions.sendFriendInvite(data).then(() => {
+            setFriendRequest(!friendRequest)
+        })
     }
 
     return (
@@ -42,8 +42,8 @@ export const Member = (props) => {
                     <div className="col-12 col-lg-4" style={{justifyContent: "right"}}>
                         <div className="row justify-content-end">
                             <div className="col-6 col-lg-10 ps-2">
-                                <button className="" style={{backgroundColor: "#9B75F9", color: "white", border: "none", borderRadius: "20px",  fontSize: "16px", display: "block", width: "100%", marginBottom: "10px"}} onClick={() => handleClick(props.id)} disabled={friendRequest === false}>
-                                {friendRequest === true ? "Connect" : "Sended"}
+                                <button className="" style={{backgroundColor: "#9B75F9", color: "white", border: "none", borderRadius: "20px",  fontSize: "16px", display: "block", width: "100%", marginBottom: "10px"}} onClick={() => handleClick(props.id)} disabled={friendRequest === true}>
+                                {friendRequest === true ? "Sended" : "Connect"}
                                 </button>
                             </div>
                             <div className="col-6 col-lg-10 ps-2">

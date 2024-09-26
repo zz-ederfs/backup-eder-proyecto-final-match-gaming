@@ -17,11 +17,11 @@ export const InfoSession = () => {
         actions.getSessionMembers(params.id_session)
     }, [])
 
-    // useEffect(() => {
-    //     if (store.totalMembers === store.specificSession.capacity) {
-    //         actions.updateFullSessions(params.id_session)
-    //     }
-    // }, [store.totalMembers, store.specificSession.capacity]);
+    useEffect(() => {
+        if (store.totalMembers === store.specificSession.capacity) {
+            actions.updateFullSessions(params.id_session)
+        }
+    }, [store.totalMembers, store.specificSession.capacity]);
 
     const handleClick =  () => {
         const userProfile = JSON.parse(localStorage.getItem("userProfile")).id
@@ -29,7 +29,9 @@ export const InfoSession = () => {
             id_user: userProfile,
             id_session: parseInt(params.id_session)
         }
-        actions.joinSession(data)
+        actions.joinSession(data).then(() => {
+            window.location.reload()
+        })
     }
 
     return(
@@ -45,7 +47,7 @@ export const InfoSession = () => {
                             <div className="row">
                             <div className="col-12 col-lg-5 d-flex flex-column justify-content-center align-items-center" style={{backgroundImage: `url(${store.specificSession.background_img})`, backgroundSize: "cover", backgroundPosition: "center", minHeight: "250px", boxShadow: "inset 0px 0px 180px rgba(0, 0, 0, 0.5)", marginBottom: "50px", borderRadius: "20px"}}>
                                 <div style={{width: "220px", height: "220px", borderRadius: "50%", overflow: "hidden", border: "2px solid #495057", marginTop: "60px",}}>
-                                    <img src={store.specificSession.host_profile_img ? store.specificSession.host_profile_img : userDefault} alt="Perfil" style={{ width: "100%", height: "100%", objectFit: "cover", }}/>
+                                    <img src={store.specificSession.host_profile_imagen ? store.specificSession.host_profile_imagen : userDefault} alt="Perfil" style={{ width: "100%", height: "100%", objectFit: "cover", }}/>
                                 </div>
                                 <div className="mb-4" style={{width: "85%", padding: "1.7rem", backgroundColor: "rgba(0, 0, 0, 0.5)", borderRadius: "15px", marginTop: "100px"}}>
                                 <h4 className="">{store.specificSession.game_name}</h4>
@@ -59,7 +61,7 @@ export const InfoSession = () => {
                                 <div className="col-12 col-lg-7 d-flex flex-column">
                                     <div className="bg-black p-2" style={{borderRadius: "15px"}}>
                                         <h5 className="text-start">Description:</h5>
-                                        <div className="bg-dark p-2" style={{borderRadius: "5px", minHeight: "80px"}}>
+                                        <div className="bg-dark p-2" style={{borderRadius: "5px", minHeight: "80px", wordWrap: "break-word"}}>
                                             <p className="text-start">
                                                 {store.specificSession.description}
                                             </p>

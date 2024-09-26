@@ -55,13 +55,14 @@ export const Navbar = () => {
                     Match
                   </Link>
                 </li>
-                <li className="nav-item dropdown">
+                <li className="nav-item dropdown ">
                   <a
-                    className="nav-link dropdown-toggle"
+                    className="nav-link dropdown-toggle "
                     href="#"
                     id="navbarDropdown"
                     role="button"
                     data-bs-toggle="dropdown"
+                    
                     aria-expanded="false"
                   >
                     Sessions
@@ -71,14 +72,14 @@ export const Navbar = () => {
                     aria-labelledby="navbarDropdown"
                   >
                     <li className="">
-                      <Link className="dropdown-item text-white" to="/session">
+                      <Link className="dropdown-item text-white" to={localStorage.getItem("token") ? "/session" : "/login"}>
                         Search Session
                       </Link>
                     </li>
                     <li>
                       <Link
-                        className="dropdown-item text-white"
-                        to="/create-session"
+                        className="dropdown-item text-white" 
+                        to={localStorage.getItem("token") ? "/create-session" : "/login"}
                       >
                         Create Session
                       </Link>
@@ -108,12 +109,12 @@ export const Navbar = () => {
                         : "Perfil"}
                     </button>
                     <ul
-                      className="dropdown-menu"
+                      className="dropdown-menu bg-dark"
                       aria-labelledby="dropdownMenuButton"
                     >
                       <li>
                         <Link
-                          className="dropdown-item"
+                          className="dropdown-item text-white"
                           to={`/profile/${
                             store.userProfile ? store.userProfile.id : ""
                           }`}
@@ -123,7 +124,7 @@ export const Navbar = () => {
                       </li>
                       <li>
                         <Link
-                          className="dropdown-item"
+                          className="dropdown-item text-white"
                           to={`/profile_edit/${store.userProfile.id}`}
                         >
                           Editar perfil
@@ -131,7 +132,7 @@ export const Navbar = () => {
                       </li>
                       <li>
                         <button
-                          className="dropdown-item"
+                          className="dropdown-item text-white"
                           onClick={handleLogout}
                         >
                           Cerrar sesión

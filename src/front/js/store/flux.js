@@ -420,6 +420,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 					if(response.status === 200){
 						console.log("Session created succesfully")
+						return responseData;
 					}
 					else {
 						console.error("Error al crear sesion: ", responseData)

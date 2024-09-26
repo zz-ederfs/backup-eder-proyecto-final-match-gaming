@@ -36,7 +36,7 @@ export const Banner = () => {
           </div>
           <div className="carousel-inner">
             <div className="carousel-item active">
-              <img src={image1} className="d-block w-100" alt="Slide 1" />
+              <img src={"https://wallpapers.com/images/featured/gaming-pictures-mvsz1kkh1xdlsf68.jpg"} className="d-block w-100" alt="Slide 1" />
               <div
                 className="carousel-caption d-block text-start"
                 style={{ left: "0", right: "auto" }}
