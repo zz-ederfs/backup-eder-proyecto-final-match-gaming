@@ -24,7 +24,22 @@ const getState = ({ getStore, getActions, setStore }) => {
 			sessions: [],
 			specificSession: [],
 			sessionMembers: [],
-			totalMembers: 0
+			totalMembers: 0,
+			filteredUsers:[],
+			currentGameDetail:{
+				"background_image": "https://media.rawg.io/media/games/cb4/cb487ab3c54b81cb685388bab42ec848.jpeg",
+				"id": 12,
+				"name": "FIFA 18",
+				"platform": [
+					"play station",
+					"xbox"
+				],
+				"rating": "4",
+				"released": "Tue, 26 Sep 2017 17:40:00 GMT",
+				"type_game": [
+					"sports"
+				]
+			},
 		},
 		actions: {
 
@@ -298,6 +313,11 @@ const getState = ({ getStore, getActions, setStore }) => {
 				  console.log("Error loading games from backend", error);
 				}
 			  },
+			fillCurrentGame : (game) =>{
+				console.log("game desde action :", game)
+				setStore({...getStore(),currentGameDetail:game})
+				console.log("game en estado global: ",getStore().currentGameDetail)
+			},
 			getFilteredGames:  async (filters) => {
 				try {
 					const response = await fetch(`${process.env.BACKEND_URL}/api/filter_game`, {
@@ -317,6 +337,31 @@ const getState = ({ getStore, getActions, setStore }) => {
 					}
 				} catch (error) {
 					console.log("Error loading message from backend", error);
+				}
+			},
+			getFilteredUsers: async (filters) => {
+				
+				try {
+					console.log(filters);
+					const response = await fetch(`${process.env.BACKEND_URL}/api/filter_user`, {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify(filters),
+					});
+			
+					if (response.ok) {
+						const data = await response.json();
+						setStore({ filteredUsers: data });  // Aquí estás actualizando la nueva propiedad
+						console.log("User search successful:", data);
+						return data; // Retornar los datos obtenidos
+					} else {
+						const errorText = await response.text();
+						console.error("Error:", response.statusText, errorText);
+					}
+				} catch (error) {
+					console.log("Error loading message from backend:", error);
 				}
 			},
 			// Funcion para obtener un juego por el id
