@@ -1,10 +1,13 @@
 import React, { useEffect, useContext, useState } from "react";
 import { CardComponentGames } from "../component/cardGamesRecomended.jsx";
 import { Context } from "../store/appContext";
+import { useNavigate } from "react-router-dom";
 
 export const Gamesrecomended = () => {
   const { store, actions } = useContext(Context);
   const [visibleGames, setVisibleGames] = useState(3); 
+
+  const navigate = useNavigate()
 
   useEffect(() => {
     actions.getGamesRecomended(15);
@@ -14,8 +17,13 @@ export const Gamesrecomended = () => {
     setVisibleGames((prev) => prev + 3); 
   };
 
+  const handleCardClick = (game) => {
+    actions.fillCurrentGame(game)
+    navigate('/game-details');
+  };
 
   const gamesAvailable = store.games && Array.isArray(store.games) ? store.games : [];
+
 
   return (
     <section className="py-5 bg-black">
@@ -27,7 +35,7 @@ export const Gamesrecomended = () => {
               gamesAvailable.slice(0, visibleGames).map((game, index) => ( 
                 <div
                   key={index}
-                  className="col-12 col-md-4 mb-4 custom-card-games-recomended"
+                  className="col-12 col-md-4 mb-4 custom-card-games-recomended" onClick={() => handleCardClick(game)}
                 >
                   <CardComponentGames
                     imageSrc={

@@ -314,9 +314,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 			  },
 			fillCurrentGame : (game) =>{
-				console.log("game desde action :", game)
 				setStore({...getStore(),currentGameDetail:game})
-				console.log("game en estado global: ",getStore().currentGameDetail)
 			},
 			getFilteredGames:  async (filters) => {
 				try {
@@ -342,7 +340,6 @@ const getState = ({ getStore, getActions, setStore }) => {
 			getFilteredUsers: async (filters) => {
 				
 				try {
-					console.log(filters);
 					const response = await fetch(`${process.env.BACKEND_URL}/api/filter_user`, {
 						method: 'POST',
 						headers: {
@@ -354,7 +351,6 @@ const getState = ({ getStore, getActions, setStore }) => {
 					if (response.ok) {
 						const data = await response.json();
 						setStore({ filteredUsers: data });  // Aquí estás actualizando la nueva propiedad
-						console.log("User search successful:", data);
 						return data; // Retornar los datos obtenidos
 					} else {
 						const errorText = await response.text();

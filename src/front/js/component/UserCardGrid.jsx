@@ -1,12 +1,20 @@
 import React from "react";
 import emptyImage from '../../img/search/NoHayResultados.png'; // Imagen para usuarios
+import { useNavigate } from "react-router-dom";
 
 const UserCardGrid = ({ users }) => {
+
+  const navigate = useNavigate();
+
+  const handleCardClick = (user) => {
+    navigate(`/profile/${user.id}`)
+  }
+
   return (
     <div className="container"> 
       <div className="row justify-content-center">
         {users.map((user, index) => (
-          <div key={index} className="col-md-4 mb-4">
+          <div key={index} className="col-md-4 mb-4" onClick={() => handleCardClick(user)}>
             <div className="card" style={{ backgroundColor: "#1E1E1E", color: "#FFFFFF", width: "100%", margin: "10px" }}>
               <img
                 src={user.profile_img_url ? user.profile_img_url : emptyImage} // Usando 'profile_img_url'

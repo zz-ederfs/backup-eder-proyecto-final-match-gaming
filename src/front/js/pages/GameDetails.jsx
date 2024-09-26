@@ -57,18 +57,16 @@ export const GameDetails = () => {
   // } = game;
 
   return (
-    <section className="py-5" style={{ backgroundColor: "#222328" }}>
+    <section className="py-5 min-vh-100" style={{ backgroundColor: "#222328"}}>
       <div
-        className="container rounded shadow-sm  "
+        className="container rounded shadow-sm"
         style={{
-          maxWidth: "1200px",
-          minHeight: "400px",
           marginTop: "100px",
           fontFamily: "Poppins",
         }}
       >
         {/* <h1 className="text-danger">{store.currentGameDetail.name}</h1> */}
-      <div className="row d-flex justify-content-center "
+      <div className="row d-flex justify-content-center my-auto mt-5"
       style={{ backgroundColor: "#1c1c1f", padding: "20px", borderRadius: "10px" }}
       >
         <div className="col-md-6">
@@ -78,20 +76,22 @@ export const GameDetails = () => {
             style={{ width: "100%", height: "auto", objectFit: "cover", borderRadius: "10px" }}
           />
         </div>
-        <div className="col-md-6 text-light ">
-          <h2
+        <div className="col-md-6 text-light px-4">
+          <h1 className="py-0 mt-2"
             style={{
-              background: "linear-gradient(to right, #8C67F6 0%, #523C90 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent"
+              // background: "linear-gradient(to right, #8C67F6 0%, #523C90 100%)",
+              // WebkitBackgroundClip: "text",
+              // WebkitTextFillColor: "transparent"
+              color: "#8c67f6"
             }}
           >
             {store.currentGameDetail.name || "Nombre no disponible"}
-          </h2>
-          <p><strong>Plataformas:</strong> {store.currentGameDetail.platform.length ? store.currentGameDetail.platform.join(", ") : "No disponible"}</p>
-          <p><strong>Género:</strong> {store.currentGameDetail.type_game.length ? store.currentGameDetail.type_game.join(", ") : "No disponible"}</p>
-          <p><strong>Rating:</strong> {store.currentGameDetail.rating || "No disponible"}</p>
-          <p><strong>Fecha de lanzamiento:</strong> {store.currentGameDetail.released ? new Date(store.currentGameDetail.released).toLocaleDateString() : "No disponible"}</p>
+          </h1>
+          <hr></hr>
+          <p className="mt-4 fs-4"><strong>Plataformas:</strong> {store.currentGameDetail.platform.length ? store.currentGameDetail.platform.join(", ") : "No disponible"}</p>
+          <p className="fs-4"><strong>Género:</strong> {store.currentGameDetail.type_game.length ? store.currentGameDetail.type_game.join(", ") : "No disponible"}</p>
+          <p className="fs-4"><strong>Rating:</strong> {store.currentGameDetail.rating || "No disponible"}</p>
+          <p className="fs-4"><strong>Fecha de lanzamiento:</strong> {store.currentGameDetail.released ? new Date(store.currentGameDetail.released).toLocaleDateString() : "No disponible"}</p>
         </div>
       </div>
     </div>
