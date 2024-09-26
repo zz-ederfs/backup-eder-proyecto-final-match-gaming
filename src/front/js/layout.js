@@ -7,7 +7,7 @@ import { Navbar } from "./component/navbar.jsx";
 import { Footer } from "./component/footer.jsx";
 
 import { Home } from "./pages/home.jsx";
-import  Login  from "./pages/login.jsx";
+import Login from "./pages/login.jsx";
 import { AgeVerification } from "./pages/age_verification.jsx";
 import { Profile } from "./pages/profile.jsx";
 import  Search  from "./pages/search.jsx";
@@ -22,7 +22,7 @@ import { Session } from "./pages/session.jsx";
 import {GameDetails} from "./pages/GameDetails.jsx";
 import { InfoSession } from "./component/create_session/info_session.jsx";
 import { UserProfileEdit } from "./pages/profile_edit.jsx";
-
+import { DonatePage } from "./pages/donation.jsx";
 
 //create your first component
 const Layout = () => {
@@ -51,10 +51,11 @@ const Layout = () => {
             <Route element={<GameSelection />} path="/game-selection" />
             <Route element={<RegistrationForm />} path="/registration-form" />
             <Route element={<GenreSelection />} path="/genre-selection" />
-            <Route element={<CreateSession/>} path="/create-session"/>
-            <Route element={<Session/>} path="/session"/>
+            <Route element={<CreateSession />} path="/create-session" />
+            <Route element={<Session />} path="/session" />
             <Route element={<GameDetails />} path="/game-details" />
-            <Route element={<InfoSession/>} path="/info-session/:id_session"/>
+            <Route element={<InfoSession />} path="/info-session/:id_session" />
+            <Route element={<DonatePage />} path="/donate" />
             <Route element={<h1>Page Not Found</h1>} path="*" />
           </Routes>
           <Footer />
