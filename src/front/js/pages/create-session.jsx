@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import logo from "../../img/logo/logo-marca.png"
-import { Link } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { GameSession } from "../component/create_session/game_card_session.jsx";
 import { Context } from "../store/appContext.js";
 import { format, parseISO, addMinutes } from 'date-fns';
@@ -14,7 +14,7 @@ export const CreateSession = () => {
     const [formComplete, setFormComplete] = useState(false);
     const [formData, setFormData] = useState({start_date: "", duration: "", language: "", session_type: "", region: "", capacity: "", description: ""});
 
-
+    const navigate = useNavigate()
 
     useEffect(()=> {
         actions.getRecommendedGames_gameSelection(15)
@@ -84,7 +84,9 @@ export const CreateSession = () => {
             id_host: JSON.parse(localStorage.getItem("userProfile")).id,
             background_img: store.searchedGames[0]?.background_image
         }
-        actions.createSession(data)
+        actions.createSession(data).then(() => {
+            navigate("/session")
+        })
     }
 
 
@@ -175,19 +177,20 @@ export const CreateSession = () => {
                 </div>
                     <div className="text-center py-3 my-4">
                         <div className="d-flex justify-content-center gap-2 flex-wrap">
-                            <Link to="/">
+                            <Link to="/session">
                                 <button className="btn btn-prev"><i className="fa-solid fa-arrow-left me-2"></i>Back</button>
                             </Link>
                             {formComplete ? (
-
+                                <Link to="/session">
                                 <button className="btn btn-prev" onClick={sendData}>
                                     Continue<i className="fa-solid fa-arrow-right ms-2" ></i>
                                 </button>
-
+                                </Link>
                             ) : (
                             <button className="btn btn-prev" disabled>
                                 Continue<i className="fa-solid fa-arrow-right ms-2" ></i>
-                            </button>)}
+                            </button>
+                            )}
                         </div>
                     </div>
                 </div>

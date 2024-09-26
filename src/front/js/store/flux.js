@@ -42,7 +42,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			},
 		},
 		actions: {
-
+		
 			loginUser: async (username, password) => {
 				try {
 				  const response = await fetch(`${process.env.BACKEND_URL}/api/login`, {
@@ -540,7 +540,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			},
 			sendFriendInvite: async (data) => {
 				try{
-					const response = await fetch(`${process.env.BACKEND_URL}/api/friend_request`, {
+					const response = await fetch(`${process.env.BACKEND_URL}/api/friends_request`, {
 						method: "POST",
 						body: JSON.stringify(data),
 						headers: {
