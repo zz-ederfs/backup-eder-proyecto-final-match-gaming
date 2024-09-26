@@ -62,22 +62,32 @@ export const GameDetails = () => {
         className="container rounded shadow-sm  "
         style={{
           maxWidth: "1200px",
-          minHeight: "600px",
+          minHeight: "400px",
           marginTop: "100px",
           fontFamily: "Poppins",
         }}
       >
         {/* <h1 className="text-danger">{store.currentGameDetail.name}</h1> */}
-      <div className="row d-flex justify-content-center ">
+      <div className="row d-flex justify-content-center "
+      style={{ backgroundColor: "#1c1c1f", padding: "20px", borderRadius: "10px" }}
+      >
         <div className="col-md-6">
           <img
             src={store.currentGameDetail.background_image } // Muestra una imagen por defecto si no hay `background_image`
             alt={`Portada del videojuego ${store.currentGameDetail.name}`}
-            style={{ width: "100%", height: "auto", objectFit: "cover" }}
+            style={{ width: "100%", height: "auto", objectFit: "cover", borderRadius: "10px" }}
           />
         </div>
         <div className="col-md-6 text-light ">
-          <h2>{store.currentGameDetail.name || "Nombre no disponible"}</h2>
+          <h2
+            style={{
+              background: "linear-gradient(to right, #8C67F6 0%, #523C90 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent"
+            }}
+          >
+            {store.currentGameDetail.name || "Nombre no disponible"}
+          </h2>
           <p><strong>Plataformas:</strong> {store.currentGameDetail.platform.length ? store.currentGameDetail.platform.join(", ") : "No disponible"}</p>
           <p><strong>Género:</strong> {store.currentGameDetail.type_game.length ? store.currentGameDetail.type_game.join(", ") : "No disponible"}</p>
           <p><strong>Rating:</strong> {store.currentGameDetail.rating || "No disponible"}</p>
