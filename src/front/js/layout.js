@@ -10,7 +10,7 @@ import { Home } from "./pages/home.jsx";
 import  Login  from "./pages/login.jsx";
 import { AgeVerification } from "./pages/age_verification.jsx";
 import { Profile } from "./pages/profile.jsx";
-import { Search } from "./pages/search.jsx";
+import  Search  from "./pages/search.jsx";
 import { SearchMatch } from "./pages/search_match.jsx";
 import { MatchResults } from "./pages/match_results.jsx";
 import { PlatformSelection } from "./pages/platform_selection.jsx";
@@ -19,6 +19,7 @@ import { RegistrationForm } from "./pages/registration_form.jsx";
 import { GenreSelection } from "./pages/genre_selection.jsx";
 import { CreateSession } from "./pages/create-session.jsx";
 import { Session } from "./pages/session.jsx";
+import {GameDetails} from "./pages/GameDetails.jsx";
 import { InfoSession } from "./component/create_session/info_session.jsx";
 import { UserProfileEdit } from "./pages/profile_edit.jsx";
 
@@ -52,6 +53,7 @@ const Layout = () => {
             <Route element={<GenreSelection />} path="/genre-selection" />
             <Route element={<CreateSession/>} path="/create-session"/>
             <Route element={<Session/>} path="/session"/>
+            <Route element={<GameDetails />} path="/game-details" />
             <Route element={<InfoSession/>} path="/info-session/:id_session"/>
             <Route element={<h1>Page Not Found</h1>} path="*" />
           </Routes>
