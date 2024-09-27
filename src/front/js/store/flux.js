@@ -26,6 +26,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 			sessionMembers: [],
 			totalMembers: 0,
 			filteredUsers:[],
+			friendRequests: [],
+      		getFriendsbyUser: [],
 			currentGameDetail:{
 				"background_image": "https://media.rawg.io/media/games/cb4/cb487ab3c54b81cb685388bab42ec848.jpeg",
 				"id": 12,
@@ -112,6 +114,16 @@ const getState = ({ getStore, getActions, setStore }) => {
 				const store = getStore();
 				return store.token !== null; // Aquí podrías incluir una verificación adicional si el token es válido
 			},
+
+			getFriendRequests: async (userId) => {
+				try {
+				  const response = await fetch(`/api/friend_request/${userId}`);
+				  const data = await response.json();
+				  setStore({ friendRequests: data });
+				} catch (error) {
+				  console.error("Error fetching friend requests:", error);
+				}
+			  },
 
 			// Use getActions to call a function within a fuction
 			exampleFunction: () => {
@@ -314,9 +326,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 			  },
 			fillCurrentGame : (game) =>{
-				console.log("game desde action :", game)
 				setStore({...getStore(),currentGameDetail:game})
-				console.log("game en estado global: ",getStore().currentGameDetail)
 			},
 			getFilteredGames:  async (filters) => {
 				try {
@@ -342,7 +352,6 @@ const getState = ({ getStore, getActions, setStore }) => {
 			getFilteredUsers: async (filters) => {
 				
 				try {
-					console.log(filters);
 					const response = await fetch(`${process.env.BACKEND_URL}/api/filter_user`, {
 						method: 'POST',
 						headers: {
@@ -354,7 +363,6 @@ const getState = ({ getStore, getActions, setStore }) => {
 					if (response.ok) {
 						const data = await response.json();
 						setStore({ filteredUsers: data });  // Aquí estás actualizando la nueva propiedad
-						console.log("User search successful:", data);
 						return data; // Retornar los datos obtenidos
 					} else {
 						const errorText = await response.text();
@@ -398,6 +406,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					if (response.ok) {
 						const data = await response.json();
 						setStore({ usersByGame: data.users }); 
+						console.log(data)
 					} else {
 						console.error("Error: ", response.statusText);
 					}
@@ -420,6 +429,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 					if(response.status === 200){
 						console.log("Session created succesfully")
+						return responseData;
 					}
 					else {
 						console.error("Error al crear sesion: ", responseData)
@@ -564,7 +574,112 @@ const getState = ({ getStore, getActions, setStore }) => {
 					console.error("Error en la solicitud: ", error)
 					return false
 				}
-			}
+			},
+			getFriendRequests: async (userId) => {
+				const url = `${process.env.BACKEND_URL}/api/friends_request/${userId}`;
+				try {
+				  const response = await fetch(url, {
+					method: "GET",
+					headers: { "Content-Type": "application/json" },
+				  });
+				  if (!response.ok) {
+					console.error("Error: ", response.statusText);
+					return [];
+				  }
+				  const data = await response.json();
+				  const enrichedData = data.map((request) => ({
+					...request,
+					user_receive_invite: userId,
+				  }));
+				  setStore({ friendRequests: enrichedData });
+				  return enrichedData;
+				} catch (error) {
+				  console.error("Error loading message from backend: ", error);
+				  return [];
+				}
+			  },
+			  acceptFriendRequest: async (user_id_first, user_id_second) => {
+				const url = `${process.env.BACKEND_URL}/api/friends_accept`;
+				const options = {
+				  method: "POST",
+				  headers: { "Content-Type": "application/json" },
+				  body: JSON.stringify({ user_id_first, user_id_second }),
+				};
+				try {
+				  const response = await fetch(url, options);
+				  const data = await response.json();
+				  if (!response.ok) {
+					throw new Error(
+					  data.msg || "Error al aceptar la solicitud de amistad"
+					);
+				  }
+				  return data;
+				} catch (error) {
+				  console.error("Error al aceptar la solicitud de amistad:", error);
+				  return { error: error.message };
+				}
+			  },
+			  rejectFriendRequest: async (id_send, id_receive) => {
+				const url = `${process.env.BACKEND_URL}/api/friends_request_remove?id_send=${id_send}&id_receive=${id_receive}`;
+				try {
+				  const response = await fetch(url, { method: "DELETE" });
+				  const data = await response.json();
+				  if (!response.ok) {
+					throw new Error(
+					  data.msg || "Error al rechazar la solicitud de amistad"
+					);
+				  }
+				  return data;
+				} catch (error) {
+				  console.error("Error al rechazar la solicitud de amistad:", error);
+				  return { error: error.message };
+				}
+			  },
+			  getFriendbyUser: async (userId) => {
+				const url = `${process.env.BACKEND_URL}/api/friends/${userId}`;
+				try {
+				  const response = await fetch(url, {
+					method: "GET",
+					headers: { "Content-Type": "application/json" },
+				  });
+				  if (!response.ok) {
+					throw new Error(`Error al obtener amigos: ${response.statusText}`);
+				  }
+				  const data = await response.json();
+				  console.log("Amigos obtenidos:", data);
+				  const enrichedData = data.map((friend) => {
+					const isFirstUser = friend.user_id_first === userId;
+					return {
+					  id: isFirstUser ? friend.user_id_second : friend.user_id_first,
+					  username: isFirstUser
+						? friend.second_username
+						: friend.first_username,
+					  profile_image: isFirstUser
+						? friend.second_profile_image
+						: friend.first_profile_image || "ruta/por/default.jpg",
+					};
+				  });
+				  setStore({ FriendbyUser: enrichedData });
+				  return enrichedData;
+				} catch (error) {
+				  console.error("Error al obtener amigos:", error);
+				  return [];
+				}
+			  },
+			  deleteFriend: async (id_first, id_second) => {
+				const url = `${process.env.BACKEND_URL}/api/friends_remove?id_first=${id_first}&id_second=${id_second}`;
+				try {
+				  const response = await fetch(url, { method: "DELETE" });
+				  const data = await response.json();
+				  if (!response.ok) {
+					throw new Error(data.msg || "Error al eliminar al amigo");
+				  }
+				  return data;
+				} catch (error) {
+				  console.error("Error al eliminar al amigo:", error);
+				  return { error: error.message };
+				}
+			  },
 		}
 	};
 };

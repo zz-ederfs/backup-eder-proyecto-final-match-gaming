@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from "react";
 import { Context } from "../store/appContext";
 
 // import userImage from '../../img/search/Gamer.jpg'; // Imagen para usuarios
-import emptyImage from '../../img/search/NoHayResultados.png'; // Imagen para videojuegos
+import emptyImage from '../../img/search/not-found.jpeg'; // Imagen para videojuegos
 import GameCardGrid from "../component/GameCardGrid.jsx";
 import UserCardGrid from "../component/UserCardGrid.jsx"; // Asegúrate de tener un componente para mostrar los usuarios
 
@@ -22,11 +22,8 @@ const SearchPage = () => {
   useEffect(() => {
     if (searchType === "Videojuego") {
       actions.getFilteredGames({ name: searchQuery, ...filters });
-      console.log(filters,searchQuery)
     } else if (searchType === "Usuario") {
       actions.getFilteredUsers({ username: searchQuery, ...filters });
-      
-      console.log(filters, searchQuery)
     }
   }, [searchType, filters, searchQuery]);
 
@@ -224,7 +221,7 @@ const SearchPage = () => {
               <UserCardGrid users={filteredResults} />
             ) : (
               <div className="text-center">
-                <img src={emptyImage} alt="No hay resultados" style={{ width: "50%" }} />
+                <img src={emptyImage} alt="No hay resultados" style={{ width: "50%", height: "50%", objectFit: "contain", marginTop: "5px"}} />
                 <p className="text-white">No hay resultados para la búsqueda.</p>
               </div>
             )}

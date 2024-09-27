@@ -430,7 +430,7 @@ def post_new_session():
         new_session = Session(game_id = data["id_game"], game_name=session_game_name, host_id = data["id_host"], host_username = session_username, host_profile_image = session_profile_img, start_date = data["start_date"], duration = data["duration"], language = data["language"], session_type = data["session_type"],region = data["region"], background_img = data["background_img"],description=data["description"], capacity = data["capacity"])    
         db.session.add(new_session)
         db.session.commit()
-        return jsonify({"msg":"sesion creada con exito"}),200      
+        return jsonify({"msg":"sesion creada con exito", "id_sesion": new_session.id}),200      
 
     except Exception as err:
         return jsonify({"error":"There was an unexpected error","msg":str(err)}),500
@@ -438,19 +438,19 @@ def post_new_session():
 @api.route('/sessions/<int:id_session>', methods=['GET'])
 def get_specific_session(id_session):
     try:
-        # Obtener la sesión específica con los datos relacionados
-        query_session = db.session.query(Session, Game.name, User.username)\
+
+        query_session = db.session.query(Session, Game.name, User.username, User.profile_img_url)\
             .join(Game, Session.game_id == Game.id)\
             .join(User, Session.host_id == User.id)\
             .filter(Session.id == id_session)\
             .first_or_404()
 
-        session, game_name, host_username = query_session
-        
+        session, game_name, host_username, profile_img_url = query_session
         
         session_data = session.serialize()  
         session_data['game_name'] = game_name  
         session_data['host_username'] = host_username 
+        session_data['host_profile_imagen'] = profile_img_url 
 
         total_members_query = db.session.query(Session_member).filter_by(session_id=id_session).count()
         session_data['total_members'] = total_members_query

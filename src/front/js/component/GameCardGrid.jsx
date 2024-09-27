@@ -9,7 +9,6 @@ const GameCardGrid = ({ games }) => {
   const navigate = useNavigate();
 
   const handleCardClick = (game) => {
-    console.log("Este es el game en el handler: ", game)
     actions.fillCurrentGame(game)
     navigate('/game-details');
   };

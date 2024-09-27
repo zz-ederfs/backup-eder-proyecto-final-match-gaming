@@ -12,7 +12,9 @@ export const Notifications = () => {
     const fetchFriendRequests = async () => {
       try {
         const requests = await actions.getFriendRequests(userId);
-        if (isMounted) setStore({ friendRequests: requests });
+        if (isMounted) {
+          console.log("Solicitudes actualizadas", store.friendRequests);
+        }
       } catch (err) {
         console.error("Error fetching friend requests:", err);
       }
@@ -31,7 +33,7 @@ export const Notifications = () => {
       isMounted = false;
       clearInterval(intervalId);
     };
-  }, [actions, userId, shouldFetch, setStore]);
+  }, [actions, userId, shouldFetch, store.friendRequests]);
 
   const friendRequests =
     store.friendRequests?.filter(

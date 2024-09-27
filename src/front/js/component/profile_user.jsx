@@ -1,5 +1,6 @@
 import React from "react";
 import "../../styles/profile.css";
+import Default from "../../img/genre_games/user_default.jpg"
 import { Link } from "react-router-dom";
 
 export const UserProfileCard = ({
@@ -15,7 +16,7 @@ export const UserProfileCard = ({
     <div className="row align-items-start">
       <div className="col-12 col-md-2 text-center mb-3 mb-md-0">
         <img
-          src={profile_img_url}
+          src={profile_img_url === "No image available" ? Default : profile_img_url}
           className="img-thumbnail circular-image"
           alt=""
         />

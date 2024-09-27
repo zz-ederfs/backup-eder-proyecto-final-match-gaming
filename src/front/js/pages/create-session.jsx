@@ -5,6 +5,7 @@ import { GameSession } from "../component/create_session/game_card_session.jsx";
 import { Context } from "../store/appContext.js";
 import { format, parseISO, addMinutes } from 'date-fns';
 import "../../styles/game_selection.css"
+import Swal from "sweetalert2";
 
 export const CreateSession = () => {
 
@@ -84,9 +85,23 @@ export const CreateSession = () => {
             id_host: JSON.parse(localStorage.getItem("userProfile")).id,
             background_img: store.searchedGames[0]?.background_image
         }
-        actions.createSession(data).then(() => {
-            navigate("/session")
-        })
+        actions.createSession(data).then(result => {
+        if (result) {
+            const data_session = {
+                id_user: JSON.parse(localStorage.getItem("userProfile")).id,
+                id_session: result.id_sesion
+            }
+            Swal.fire({
+                icon: "success",
+                title: `Session created id:${result.id_sesion}`,
+                showConfirmButton: true,
+                background: "#222328",
+                color: "rgb(140, 103, 246)",
+              });
+            actions.joinSession(data_session).then(() => {
+                navigate("/session")
+            })
+        }})
     }
 
 
@@ -170,7 +185,7 @@ export const CreateSession = () => {
                     </div>
                     <div className="col-md-12 py-1">
                         <label className="form-label mb-1">Description</label>
-                        <textarea className="form-control" name="description" onChange={getFormData} rows="4" style={{backgroundColor: "#222328", border: "1px solid #797979", color:"white", borderRadius: "10px"}}></textarea>
+                        <textarea className="form-control" name="description" onChange={getFormData} rows="4" maxLength="199" style={{backgroundColor: "#222328", border: "1px solid #797979", color:"white", borderRadius: "10px"}}></textarea>
                     </div>
 
                 {/* boton */}
