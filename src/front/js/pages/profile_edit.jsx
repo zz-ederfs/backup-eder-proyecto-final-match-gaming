@@ -14,9 +14,13 @@ const initialProfileData = {
   profile_img_url: "",
   favoriteGames: [],
   platform: [],
+  region: "",
+  schedule: "",
 };
 
 const availablePlatforms = ["steam", "play station", "xbox", "nintendo switch"];
+const availableRegions = ["NA", "SA"];
+const availableSchedules = ["ANYTIME", "MORNING", "AFTERNOON", "EVENING"];
 
 const validatePlatforms = (platforms) => {
   const validPlatforms = ["steam", "play station", "xbox", "nintendo switch"];
@@ -58,7 +62,7 @@ export const UserProfileEdit = () => {
         }
       } catch (error) {
         setErrorMessage(error.message);
-        console.error("Error at obtain data of profile:", error);
+        console.error("Error al obtener los datos del perfil:", error);
       }
     };
 
@@ -94,6 +98,16 @@ export const UserProfileEdit = () => {
     }));
   };
 
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setProfileData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+
+    console.log(profileData)
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     setErrorMessage("");
@@ -121,14 +135,6 @@ export const UserProfileEdit = () => {
     }
   };
 
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setProfileData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
   return (
     <section id="editProfile" className="container-fluid py-5 bg-black">
       <div className="container d-flex flex-column rounded shadow-sm profile-edit-container">
@@ -139,61 +145,97 @@ export const UserProfileEdit = () => {
               <div className="alert alert-danger">{errorMessage}</div>
             )}
             <div className="row mb-3">
-              <div className="col-md-4">
+              <div className="col-md-6 mb-3">
                 <label className="form-label">Nombre:</label>
                 <input
                   type="text"
-                  name="first_name"
                   className="form-control"
+                  name="first_name"
                   value={profileData.first_name}
                   onChange={handleInputChange}
-                  required
                 />
               </div>
-              <div className="col-md-4 mb-1">
+              <div className="col-md-6 mb-3">
                 <label className="form-label">Apellido:</label>
                 <input
                   type="text"
-                  name="last_name"
                   className="form-control"
+                  name="last_name"
                   value={profileData.last_name}
                   onChange={handleInputChange}
-                  required
                 />
               </div>
-              <div className="col-md-4 mb-1">
-                <label className="form-label">ID de Discord:</label>
+            </div>
+            <div className="row mb-3">
+              <div className="col-md-6 mb-3">
+                <label className="form-label">Discord ID:</label>
                 <input
                   type="text"
-                  name="discord_id"
                   className="form-control"
+                  name="discord_id"
                   value={profileData.discord_id}
                   onChange={handleInputChange}
                 />
               </div>
-              <div className="col-md-4 mb-1">
-                <label className="form-label">ID de Steam:</label>
+              <div className="col-md-6 mb-3">
+                <label className="form-label">Steam ID:</label>
                 <input
                   type="text"
-                  name="steam_id"
                   className="form-control"
+                  name="steam_id"
                   value={profileData.steam_id}
                   onChange={handleInputChange}
                 />
               </div>
-              <div className="col-md-8 mb-1">
+            </div>
+            <div className="row mb-3">
+              <div className="col-md-12 mb-3">
                 <label className="form-label">Descripción:</label>
                 <textarea
-                  name="description"
                   className="form-control"
-                  rows="2"
+                  name="description"
                   value={profileData.description}
                   onChange={handleInputChange}
                 ></textarea>
               </div>
             </div>
-            <div className="row mb-3 mb-1">
-              <div className="col-md-12">
+            <div className="row mb-3">
+              <div className="col-md-6 mb-1">
+                <label className="form-label">Región:</label>
+                <select
+                  name="region"
+                  className="form-control"
+                  value={profileData.region}
+                  onChange={handleInputChange}
+                  required
+                >
+                  <option value="">Selecciona una región</option>
+                  {availableRegions.map((region) => (
+                    <option key={region} value={region}>
+                      {region}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="col-md-6 mb-1">
+                <label className="form-label">Horario Preferido:</label>
+                <select
+                  name="schedule"
+                  className="form-control"
+                  value={profileData.schedule}
+                  onChange={handleInputChange}
+                  required
+                >
+                  <option value="">Selecciona un horario</option>
+                  {availableSchedules.map((schedule) => (
+                    <option key={schedule} value={schedule}>
+                      {schedule}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="row mb-3 mt-3">
+              <div className="col-md-12 m">
                 <label className="form-label">URL de Imagen de Perfil:</label>
                 <input
                   type="text"
@@ -204,8 +246,7 @@ export const UserProfileEdit = () => {
                 />
               </div>
             </div>
-            <div className="row mb-3">
-              <div className="col-md-12">
+              <div className="col-md-12 mt-1">
                 <label className="form-label">Plataforma:</label>
                 <div className="input-group">
                   <select
@@ -244,9 +285,10 @@ export const UserProfileEdit = () => {
                     </li>
                   ))}
                 </ul>
+                <div>
+                </div>
               </div>
             </div>
-            <div className="row mb-3"></div>
             <div className="row mb-3">
               <div className="col-12">
                 <FavoriteGames userId={userId} />

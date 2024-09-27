@@ -1,5 +1,5 @@
 import React from "react";
-import emptyImage from '../../img/search/NoHayResultados.png'; // Imagen para usuarios
+import emptyImage from '../../img/search/not-found.jpeg'; // Imagen para usuarios
 import { useNavigate } from "react-router-dom";
 
 const UserCardGrid = ({ users }) => {

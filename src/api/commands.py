@@ -255,8 +255,9 @@ def setup_commands(app):
             game.rating = data['rating']
             db.session.add(game)
         db.session.commit()
-        print("All test users and games created!")
-        
+
+        print("All test users created!")
+
     @app.cli.command("insert-test-games")
     def insert_test_games():
 
