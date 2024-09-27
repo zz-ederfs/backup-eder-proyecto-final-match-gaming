@@ -334,7 +334,7 @@ def search_user():
 
 @api.route('/profile_edit/<int:id_user>', methods=['PUT'])
 def update_profile_edit(id_user):
-    only_allowed = ["first_name", "last_name", "discord_id", "steam_id", "description", "platform", "profile_img_url"]
+    only_allowed = ["first_name", "last_name", "discord_id", "steam_id", "description", "platform", "profile_img_url", "schedule", "region"]
     data = request.get_json()
     try:
         query_user = db.session.query(User).filter_by(id=id_user).first()
@@ -352,15 +352,24 @@ def update_profile_edit(id_user):
                     if not all(platform in valid_platforms for platform in value):
                         return jsonify({"msg": f"Plataformas no válidas: {', '.join(value)}"}), 400
                     value = [Platform(platform) for platform in value]
+                
+                
+                if item == "schedule":
+                    pass
+                
+                if item == "region":
+                
+                    valid_regions = ["NA", "SA"]
+                    if value not in valid_regions:
+                        return jsonify({"msg": f"Región no válida: {value}"}), 400
+                
                 setattr(query_user, item, value)
+        
         db.session.commit()
         return jsonify({"msg": "Se actualizó la información satisfactoriamente"}), 200
     except Exception as err:
         db.session.rollback()
         return jsonify({"error": "Ocurrió un error inesperado", "msg": str(err)}), 500
-
-
-
 
 """ LOGIN AND AUTENTICATION """
 

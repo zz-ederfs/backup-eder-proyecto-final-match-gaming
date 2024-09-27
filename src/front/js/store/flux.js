@@ -160,58 +160,32 @@ const getState = ({ getStore, getActions, setStore }) => {
 				try {
 				  const backendUrl = process.env.BACKEND_URL;
 				  if (!backendUrl) throw new Error("BACKEND_URL no está definido");
-				  // Asegúrate de que 'platform' sea una lista de cadenas
-				  profileData.platform = Array.isArray(profileData.platform)
-					? profileData.platform
-					: profileData.platform
-						.split(",")
-						.map((platform) => platform.trim());
-				  // Validar que 'platform' contenga solo valores válidos
-				  const validPlatforms = [
-					"steam",
-					"play station",
-					"xbox",
-					"nintendo switch",
-				  ];
-				  if (
-					!profileData.platform.every((platform) =>
-					  validPlatforms.includes(platform)
-					)
-				  ) {
-					throw new Error(
-					  `Plataformas no válidas: ${profileData.platform.join(", ")}`
-					);
+			  
+				  if (typeof profileData.platform === "string") {
+					profileData.platform = profileData.platform.split(",").map((platform) => platform.trim());
+				  } else if (!Array.isArray(profileData.platform)) {
+					throw new Error("El campo 'platform' debe ser una cadena o una lista");
 				  }
-				  // Asegúrate de que 'favoriteGames' sea una lista de objetos con id y name
-				  if (!Array.isArray(profileData.favoriteGames)) {
-					throw new Error("favoriteGames debe ser una lista de objetos");
+			  	
+				  let response = await fetch(`${backendUrl}/api/profile_edit/${userId}`, {
+					method: "PUT",
+					body: JSON.stringify(profileData),
+					headers: {
+					  "Content-Type": "application/json",
+					},
+				  });
+			  
+				  let responseData = await response.json();
+			  
+				  if (response.status === 200) {
+					console.log("Perfil actualizado satisfactoriamente:", responseData);
+					return responseData;
+				  } else {
+					console.error("Error al actualizar el perfil:", responseData);
+					throw new Error(responseData.msg || "Error desconocido al actualizar el perfil");
 				  }
-				  if (
-					!profileData.favoriteGames.every(
-					  (game) => typeof game === "object" && game.id && game.name
-					)
-				  ) {
-					throw new Error(
-					  "Cada objeto en favoriteGames debe tener 'id' y 'name'"
-					);
-				  }
-				  const response = await fetch(
-					`${backendUrl}/api/profile_edit/${userId}`,
-					{
-					  method: "PUT",
-					  headers: { "Content-Type": "application/json" },
-					  body: JSON.stringify(profileData),
-					}
-				  );
-				  if (!response.ok)
-					throw new Error(
-					  `Error al actualizar el perfil: ${await response.text()}`
-					);
-				  const updatedProfile = await response.json();
-				  setStore({ userProfile: updatedProfile });
-				  return updatedProfile;
 				} catch (error) {
-				  console.error("Error al actualizar el perfil:", error);
+				  console.log("Error en el proceso de actualización del perfil", error);
 				  throw error;
 				}
 			  },
