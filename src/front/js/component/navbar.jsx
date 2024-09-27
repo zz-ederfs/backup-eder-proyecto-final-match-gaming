@@ -86,6 +86,11 @@ export const Navbar = () => {
                     </li>
                   </ul>
                 </li>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/donate">
+                    Support
+                  </Link>
+                </li>
               </ul>
 
               {store.isAuthenticated && (

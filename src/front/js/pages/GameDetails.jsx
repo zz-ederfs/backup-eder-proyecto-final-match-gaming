@@ -67,7 +67,7 @@ export const GameDetails = () => {
       >
         {/* <h1 className="text-danger">{store.currentGameDetail.name}</h1> */}
       <div className="row d-flex justify-content-center my-auto mt-5"
-      style={{ backgroundColor: "#1c1c1f", padding: "20px", borderRadius: "10px" }}
+      style={{ backgroundColor: "#1c1c1f", padding: "20px", borderRadius: "10px", marginTop: "20px"}}
       >
         <div className="col-md-6">
           <img
