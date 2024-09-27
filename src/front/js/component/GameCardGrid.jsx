@@ -1,6 +1,6 @@
 import React, {useContext} from "react";
 import { Context } from "../store/appContext";
-import emptyImage from '../../img/search/NoHayResultados.png'; // Imagen para videojuegos
+import emptyImage from '../../img/search/not-found.jpeg'; // Imagen para videojuegos
 import { useNavigate } from "react-router-dom"; // Importar useNavigate para redirigir
 
 const GameCardGrid = ({ games }) => {

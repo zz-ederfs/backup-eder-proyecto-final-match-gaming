@@ -18,11 +18,6 @@ export const InfoSession = () => {
         actions.getSessionMembers(params.id_session)
     }, [])
 
-    useEffect(() => {
-        if (store.totalMembers === store.specificSession.capacity) {
-            actions.updateFullSessions(params.id_session)
-        }
-    }, [store.totalMembers, store.specificSession.capacity]);
 
     const handleClick =  () => {
         const userProfile = JSON.parse(localStorage.getItem("userProfile")).id
