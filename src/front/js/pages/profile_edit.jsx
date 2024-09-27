@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { Context } from "../store/appContext";
 import "../../styles/profile_edit.css";
 import { FavoriteGames } from "../component/profile_games.jsx";
+import { Modal } from "../component/alert.jsx";
 
 const initialProfileData = {
   first_name: "",
@@ -11,8 +12,8 @@ const initialProfileData = {
   steam_id: "",
   description: "",
   profile_img_url: "",
-  platform: [],
   favoriteGames: [],
+  platform: [],
 };
 
 const availablePlatforms = ["steam", "play station", "xbox", "nintendo switch"];
@@ -30,6 +31,9 @@ export const UserProfileEdit = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [selectedPlatform, setSelectedPlatform] = useState("");
   const [shouldFetch, setShouldFetch] = useState(true);
+  const [modalMessage, setModalMessage] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalTitle, setModalTitle] = useState("");
 
   useEffect(() => {
     let isMounted = true;
@@ -54,7 +58,7 @@ export const UserProfileEdit = () => {
         }
       } catch (error) {
         setErrorMessage(error.message);
-        console.error("Error al obtener los datos del perfil:", error);
+        console.error("Error at obtain data of profile:", error);
       }
     };
 
@@ -66,14 +70,6 @@ export const UserProfileEdit = () => {
       isMounted = false;
     };
   }, [userId, actions, store, shouldFetch]);
-
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setProfileData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
 
   const handlePlatformChange = (event) => {
     setSelectedPlatform(event.target.value);
@@ -111,11 +107,17 @@ export const UserProfileEdit = () => {
 
     try {
       await actions.updateUserProfile(userId, profileData);
-      alert("¡Perfil actualizado con éxito!");
-      navigate(`/profile/${userId}`);
+      setModalTitle("MatchGaming");
+      setModalMessage("¡Perfil actualizado con éxito!");
+      setModalVisible(true);
+      setTimeout(() => {
+        setModalVisible(false);
+        navigate(`/profile/${userId}`);
+      }, 3000);
     } catch (error) {
-      console.error("Error al actualizar el perfil:", error);
-      alert("Error al actualizar el perfil.");
+      setModalTitle("Error en la actualización");
+      setModalMessage("Error al actualizar el perfil.");
+      setModalVisible(true);
     }
   };
 
@@ -124,82 +126,72 @@ export const UserProfileEdit = () => {
       <div className="container d-flex flex-column rounded shadow-sm profile-edit-container">
         <div className="d-flex justify-content-between align-items-center text-white">
           <form className="w-100" onSubmit={handleSubmit}>
-            <h3 className="mb-4 mt-5 text-center">Editar Perfil</h3>
+            <h3 className="mb-4 mt-3 text-center">Editar Perfil</h3>
             {errorMessage && (
               <div className="alert alert-danger">{errorMessage}</div>
             )}
             <div className="row mb-3">
-              <div className="col-md-6">
+              <div className="col-md-4">
                 <label className="form-label">Nombre:</label>
                 <input
                   type="text"
                   name="first_name"
                   className="form-control"
                   value={profileData.first_name}
-                  onChange={handleInputChange}
                   required
                 />
               </div>
-              <div className="col-md-6">
+              <div className="col-md-4 mb-1">
                 <label className="form-label">Apellido:</label>
                 <input
                   type="text"
                   name="last_name"
                   className="form-control"
                   value={profileData.last_name}
-                  onChange={handleInputChange}
                   required
                 />
               </div>
-            </div>
-            <div className="row mb-3">
-              <div className="col-md-6">
+              <div className="col-md-4 mb-1">
                 <label className="form-label">ID de Discord:</label>
                 <input
                   type="text"
                   name="discord_id"
                   className="form-control"
                   value={profileData.discord_id}
-                  onChange={handleInputChange}
                 />
               </div>
-              <div className="col-md-6">
+              <div className="col-md-4 mb-1">
                 <label className="form-label">ID de Steam:</label>
                 <input
                   type="text"
                   name="steam_id"
                   className="form-control"
                   value={profileData.steam_id}
-                  onChange={handleInputChange}
                 />
               </div>
-            </div>
-            <div className="row mb-3">
-              <div className="col-12 text-justify">
+              <div className="col-md-8 mb-1">
                 <label className="form-label">Descripción:</label>
                 <textarea
                   name="description"
                   className="form-control"
-                  rows="3"
+                  rows="2"
                   value={profileData.description}
-                  onChange={handleInputChange}
                 ></textarea>
               </div>
             </div>
-            <div className="row mb-3">
-              <div className="col-12">
+            <div className="row mb-3 mb-1">
+              <div className="col-md-12">
                 <label className="form-label">URL de Imagen de Perfil:</label>
                 <input
                   type="text"
                   name="profile_img_url"
                   className="form-control"
                   value={profileData.profile_img_url}
-                  onChange={handleInputChange}
                 />
               </div>
             </div>
             <div className="row mb-3">
-              <div className="col-12">
+              <div className="col-md-12">
                 <label className="form-label">Plataforma:</label>
                 <div className="input-group">
                   <select
@@ -240,6 +232,7 @@ export const UserProfileEdit = () => {
                 </ul>
               </div>
             </div>
+            <div className="row mb-3"></div>
             <div className="row mb-3">
               <div className="col-12">
                 <FavoriteGames userId={userId} />
@@ -259,6 +252,7 @@ export const UserProfileEdit = () => {
           </form>
         </div>
       </div>
+      {modalVisible && <Modal title={modalTitle} message={modalMessage} />}
     </section>
   );
 };
