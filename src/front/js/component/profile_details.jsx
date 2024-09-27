@@ -2,6 +2,7 @@ import React, { useEffect, useContext, useState } from "react";
 import { UserProfileCard } from "./profile_user.jsx";
 import { Context } from "../store/appContext";
 import { SessionCardResult } from "./create_session/session_card_result.jsx";
+import { Profile_friends } from "./profile_friends.jsx";
 
 export const UserInformation = ({ userId }) => {
   const { store, actions } = useContext(Context);
@@ -160,11 +161,13 @@ export const UserInformation = ({ userId }) => {
         </div>
       </section>
       <section id="profile_games">
-        <div className="row">
-          <div className="col-12 col-md-4 mt-5">
-            <div className="rounded custom-card-friends align-items-center text-center p-3">
-              <h3 className="text-center">Amigos</h3>
-              <div className="mt-5"></div>
+        <div className="row mb-5">
+          <div className="col-12 col-md-4 mt-5 mb-5">
+            <div className="rounded custom-card-friends p-3">
+              <h3 className="text-start">Amigos</h3>
+              <div className="mt-5 mb-4">
+                <Profile_friends />
+              </div>
             </div>
           </div>
           <div className="col-12 col-md-8 mt-5">

@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../../img/logo/logo-marca.png";
 import { Context } from "../store/appContext.js";
+import { Notifications } from "./notifications.jsx";
 
 export const Navbar = () => {
   const { store, actions } = useContext(Context);
@@ -9,7 +10,7 @@ export const Navbar = () => {
 
   const handleLogout = () => {
     actions.logoutUser();
-    navigate("/"); // Redirige al usuario a la página de inicio
+    navigate("/");
   };
 
   return (
@@ -87,42 +88,7 @@ export const Navbar = () => {
               </ul>
 
               {store.isAuthenticated && (
-                <div className="dropdown me-2">
-                  <button
-                    className="btn nav_button dropdown-toggle"
-                    type="button"
-                    id="dropdownMenuButton"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                  >
-                    <i className="fa-solid fa-bell"> 4</i>
-                  </button>
-                  <ul
-                    className="dropdown-menu"
-                    aria-labelledby="dropdownMenuButton"
-                  >
-                    <li>
-                      <a className="dropdown-item" href="#">
-                        Notificación 1: Mensaje importante
-                      </a>
-                    </li>
-                    <li>
-                      <a className="dropdown-item" href="#">
-                        Notificación 2: Recordatorio de cita
-                      </a>
-                    </li>
-                    <li>
-                      <a className="dropdown-item" href="#">
-                        Notificación 3: Actualización de sistema
-                      </a>
-                    </li>
-                    <li>
-                      <a className="dropdown-item" href="#">
-                        Notificación 4: Nueva actividad
-                      </a>
-                    </li>
-                  </ul>
-                </div>
+                <Notifications notifications={store.notifications} />
               )}
 
               <div className="d-flex align-items-center navbar-container">
@@ -137,7 +103,8 @@ export const Navbar = () => {
                     >
                       <i className="fas fa-user me-3"></i>
                       {store.userProfile
-                        ? JSON.parse(localStorage.getItem("userProfile")).username
+                        ? JSON.parse(localStorage.getItem("userProfile"))
+                            .username
                         : "Perfil"}
                     </button>
                     <ul
