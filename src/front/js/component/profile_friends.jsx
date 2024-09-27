@@ -1,6 +1,7 @@
 import React, { useEffect, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Context } from "../store/appContext.js";
+import userDefault from "../../img/genre_games/user_default.jpg"
 
 export const Profile_friends = () => {
   const { store, actions } = useContext(Context);
@@ -73,7 +74,7 @@ export const Profile_friends = () => {
             <div className="col-12 d-flex flex-column flex-md-row align-items-center">
               <div className="friend-item me-3 mb-3 mb-md-0">
                 <img
-                  src={friend.profile_image || "default-image-url.jpg"}
+                  src={friend.profile_image? userDefault : friend.profile_image}
                   style={{ width: "80px", height: "80px", borderRadius: "50%" }}
                   alt={friend.username}
                 />

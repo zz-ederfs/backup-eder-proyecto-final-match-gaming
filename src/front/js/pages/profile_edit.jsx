@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { Context } from "../store/appContext";
+import { Context } from "../store/appContext.js";
 import "../../styles/profile_edit.css";
 import { FavoriteGames } from "../component/profile_games.jsx";
 import { Modal } from "../component/alert.jsx";
@@ -121,6 +121,14 @@ export const UserProfileEdit = () => {
     }
   };
 
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setProfileData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
   return (
     <section id="editProfile" className="container-fluid py-5 bg-black">
       <div className="container d-flex flex-column rounded shadow-sm profile-edit-container">
@@ -138,6 +146,7 @@ export const UserProfileEdit = () => {
                   name="first_name"
                   className="form-control"
                   value={profileData.first_name}
+                  onChange={handleInputChange}
                   required
                 />
               </div>
@@ -148,6 +157,7 @@ export const UserProfileEdit = () => {
                   name="last_name"
                   className="form-control"
                   value={profileData.last_name}
+                  onChange={handleInputChange}
                   required
                 />
               </div>
@@ -158,6 +168,7 @@ export const UserProfileEdit = () => {
                   name="discord_id"
                   className="form-control"
                   value={profileData.discord_id}
+                  onChange={handleInputChange}
                 />
               </div>
               <div className="col-md-4 mb-1">
@@ -167,6 +178,7 @@ export const UserProfileEdit = () => {
                   name="steam_id"
                   className="form-control"
                   value={profileData.steam_id}
+                  onChange={handleInputChange}
                 />
               </div>
               <div className="col-md-8 mb-1">
@@ -176,6 +188,7 @@ export const UserProfileEdit = () => {
                   className="form-control"
                   rows="2"
                   value={profileData.description}
+                  onChange={handleInputChange}
                 ></textarea>
               </div>
             </div>
@@ -187,6 +200,7 @@ export const UserProfileEdit = () => {
                   name="profile_img_url"
                   className="form-control"
                   value={profileData.profile_img_url}
+                  onChange={handleInputChange}
                 />
               </div>
             </div>

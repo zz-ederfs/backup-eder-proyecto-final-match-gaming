@@ -88,7 +88,7 @@ export const Navbar = () => {
                 </li>
                 <li className="nav-item">
                   <Link className="nav-link" to="/donate">
-                    Support
+                    Donate
                   </Link>
                 </li>
               </ul>

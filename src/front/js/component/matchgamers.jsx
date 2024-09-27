@@ -12,11 +12,12 @@ export const MatchGamers = () => {
     store.usersByGame = []
     actions.getRecommendedGames_gameSelection(1).then(() => {
       actions.getUsersByGame(store.recommendedGames[0].id)
+    }).then(() => {
+
+      console.log(store.usersByGame)
     })
   },[])
-
-  console.log(store.usersByGame)
-
+  
   return (
     <>
       <section className="py-5 bg-black">

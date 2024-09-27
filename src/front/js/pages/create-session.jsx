@@ -4,8 +4,8 @@ import { Link, Navigate, useNavigate } from "react-router-dom";
 import { GameSession } from "../component/create_session/game_card_session.jsx";
 import { Context } from "../store/appContext.js";
 import { format, parseISO, addMinutes } from 'date-fns';
-import Swal from "sweetalert2";
 import "../../styles/game_selection.css"
+import Swal from "sweetalert2";
 
 export const CreateSession = () => {
 
@@ -93,11 +93,10 @@ export const CreateSession = () => {
             }
             Swal.fire({
                 icon: "success",
-                title: "Gracias por tu donación!",
-                showConfirmButton: false,
-                timer: 2500,
+                title: `Session created id:${result.id_sesion}`,
+                showConfirmButton: true,
                 background: "#222328",
-                color: "#FFFFFF",
+                color: "rgb(140, 103, 246)",
               });
             actions.joinSession(data_session).then(() => {
                 navigate("/session")
@@ -186,7 +185,7 @@ export const CreateSession = () => {
                     </div>
                     <div className="col-md-12 py-1">
                         <label className="form-label mb-1">Description</label>
-                        <textarea className="form-control" name="description" onChange={getFormData} rows="4" maxlength="199" style={{backgroundColor: "#222328", border: "1px solid #797979", color:"white", borderRadius: "10px"}}></textarea>
+                        <textarea className="form-control" name="description" onChange={getFormData} rows="4" maxLength="199" style={{backgroundColor: "#222328", border: "1px solid #797979", color:"white", borderRadius: "10px"}}></textarea>
                     </div>
 
                 {/* boton */}
