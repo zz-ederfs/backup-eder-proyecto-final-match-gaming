@@ -244,9 +244,19 @@ def setup_commands(app):
             user.type_game = data['type_game']
             user.profile_img_url = data['profile_img_url']
             db.session.add(user)
-        db.session.commit()
-        print("All test users created!")
 
+        for data in data_games:     
+            game= Game()
+            game.name = data['name']
+            game.platform = data['platform']
+            game.released = data['released']
+            game.background_image = data['background_image']
+            game.type_game = data['game_type']
+            game.rating = data['rating']
+            db.session.add(game)
+        db.session.commit()
+        print("All test users and games created!")
+        
     @app.cli.command("insert-test-games")
     def insert_test_games():
 
